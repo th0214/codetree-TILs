@@ -32,7 +32,7 @@ def cross():
     for i in yung:
         count = 0
         for j in c:
-            if (i[0] + dx[j]) < n and (i[1] + dy[j]) < n:
+            if 0 <= (i[0] + dx[j]) < n and 0 <= (i[1] + dy[j]) < n:
                 if graph[i[0] + dx[j]][i[1] + dy[j]] >= 1:
                     count += 1
         graph[i[0]][i[1]] += count
