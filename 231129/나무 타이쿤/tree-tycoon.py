@@ -22,7 +22,6 @@ def yung_move(d,p):
     for i in range(len(yung)):
         yung[i][0] += over_move(yung[i][0], dx[d] * p)
         yung[i][1] += over_move(yung[i][0], dy[d] * p)
-    return yung
 
 def grow():
     for i in yung:
