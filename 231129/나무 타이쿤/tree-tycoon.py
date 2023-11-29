@@ -29,31 +29,30 @@ def grow():
         graph[i[0]][i[1]] += 1
 
 def cross():
-    c = [[1,1],[-1,-1],[-1,1],[1,-1]]
+    c = [2,4,6,8]
     for i in yung:
         count = 0
         for j in c:
-            if (i[0] + j[0]) < n and (i[1] + j[1]) < n:
-                if graph[i[0] + j[0]][i[1] + j[1]] >= 1:
+            if (i[0] + dx[j]) < n and (i[1] + dy[j]) < n:
+                if graph[i[0] + dx[j]][i[1] + dy[j]] >= 1:
                     count += 1
         graph[i[0]][i[1]] += count
 
 def search_tree():
-    global yung
     new_yung = []
     for i in range(n):
         for j in range(n):
             if graph[i][j] >= 2 and [i,j] not in yung:
                 graph[i][j] -= 2
                 new_yung.append([i,j])
-    yung = new_yung
+    return new_yung
 
 for _ in range(m):
     d,p = map(int, input().split())
     yung_move(d,p)
     grow()
     cross()
-    search_tree()
+    yung = search_tree()
 
 for i in graph:
     for j in i:
