@@ -10,18 +10,18 @@ for _ in range(n):
 
 yung = [[n-1,0],[n-1,1],[n-2,0],[n-2,1]]
 
-def over_move(direction):
-    if direction > n-1:
-        direction = direction % (n-1)
+def over_move(y, direction):
+    if y + direction > n-1:
+        new_direction = direction % (n-1)
     else:
-        direction = direction
-    return direction
+        new_direction = direction
+    return new_direction
 
 
 def yung_move(d,p):
     for i in range(len(yung)):
-        yung[i][0] += over_move(dx[d] * p)
-        yung[i][1] += over_move(dy[d] * p)
+        yung[i][0] += over_move(yung[i][0], dx[d] * p)
+        yung[i][1] += over_move(yung[i][0], dy[d] * p)
     return yung
 
 def grow():
