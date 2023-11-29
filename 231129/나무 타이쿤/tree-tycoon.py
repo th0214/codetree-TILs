@@ -13,6 +13,8 @@ yung = [[n-1,0],[n-1,1],[n-2,0],[n-2,1]]
 def over_move(y, direction):
     if y + direction >= n:
         new_direction = direction % (n-1)
+    elif y + direction < 0:
+        new_direction = direction + n
     else:
         new_direction = direction
     return new_direction
