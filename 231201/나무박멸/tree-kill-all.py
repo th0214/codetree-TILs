@@ -13,21 +13,21 @@ def grow():
     temp_blank = []
     for x in range(n):
         for y in range(n):
-            if arr[x][y] > 0:
+            if graph[x][y] > 0:
                 count = 0
                 blank = 0
                 for i in range(4):
                     nx, ny = x + dx[i], y + dy[i]
-                    if 0 <= nx < n and 0 <= ny < n and arr[nx][ny] > 0:
+                    if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] > 0:
                         count += 1
-                    if 0 <= nx < n and 0 <= ny < n and arr[nx][ny] == 0:
+                    if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 0:
                         blank += 1
                 temp.append([x, y, count])
                 if blank > 0:
                     temp_blank.append([x, y, blank])
 
     for x, y, count in temp:
-        arr[x][y] += count
+        graph[x][y] += count
 
     return temp_blank
 
