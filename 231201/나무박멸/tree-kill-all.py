@@ -29,65 +29,61 @@ def grow():
     return tmp_blank
 
 def seed(tmp):
-    tmp_graph = [[0] * n for _ in range(n)]
+    tmp_graph = []
     for x,y,cnt in tmp:
-        for k in range(4):
-            if 0 <= x+dx[k] < n and 0 <= y+dy[k] < n and graph[x+dx[k]][y+dy[k]] == 0 and not visited[x+dx[k]][y+dy[k]]:
-                tmp_graph[x+dx[k]][y+dy[k]] += graph[x][y] // cnt
+        if cnt > 0:
+            val = graph[x][y]//cnt
+            for k in range(4):
+                if 0 <= x+dx[k] < n and 0 <= y+dy[k] < n and graph[x+dx[k]][y+dy[k]] == 0 and not visited[x+dx[k]][y+dy[k]]:
+                    tmp_graph.append([x+dx[k],y+dy[k],val])
+                
     
-    for i in range(n):
-        for j in range(n):
-            graph[i][j] += tmp_graph[i][j]
+    for x,y,val in tmp_graph:
+        graph[x][y] += val
 
 ddx = [-1,1,-1,1]
 ddy = [1,1,-1,-1]
+visited = [[0] * n for _ in range(n)]
 
 def duk(x,y):
     global total, visited
-    t_sum = 0
     t_list = [[0] * n for _ in range(n)]
+    standard = graph[x][y]
+    t_list[x][y] = c
     for i in range(4):
         for j in range(1,k+1):
             nx, ny = x + (ddx[i] * j), y + (ddy[i] * j)
             if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] > 0:
-                t_sum += graph[nx][ny]
+                standard += graph[nx][ny]
                 t_list[nx][ny] = c
             elif 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 0:
                 t_list[nx][ny] = c
                 break
-            else:
+            elif 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == -1:
                 break
                 
-    if total < t_sum + graph[x][y]:
-        total = t_sum + graph[x][y]
-        t_list[x][y] = c
-        visited = t_list
+    if total < standard:
+        total = standard
+        visited = t_list.copy()
+    
 
-visited = [[0] * n for _ in range(n)]
-
-def remove():
-    for i in range(len(visited)):
-        for j in range(len(visited)):
-            if visited[i][j] > 0:
-                graph[i][j] = 0
-
-def duk_remove():
-    global visited
+def duk_remove(visited):
     for i in range(n):
         for j in range(n):
             if visited[i][j] > 0:
                 visited[i][j] -= 1
+                graph[i][j] = 0
 
 for _ in range(m):
     tmp_blank = grow()
     seed(tmp_blank)
+
     total = 0
     for i in range(n):
         for j in range(n):
             if graph[i][j] > 0:
                 duk(i,j)
-    
-    remove()
-    duk_remove()
+                
+    duk_remove(visited)
     answer += total
 print(answer)
