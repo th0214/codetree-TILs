@@ -9,24 +9,27 @@ dx = [1,0,-1,0]
 dy = [0,1,0,-1]
 
 def grow():
-    tmp = []
-    tmp_blank = []
-    for i, num in enumerate(graph):
-        for j, num2 in enumerate(num):
-            if num2 > 0:
-                cnt = 0
-                blank_cnt = 0
-                for k in range(4):
-                    if 0 <= i+dx[k] < n and 0 <= j+dy[k] < n and graph[i+dx[k]][j+dy[k]] > 0:
-                        cnt += 1
-                    if 0 <= i+dx[k] < n and 0 <= j+dy[k] < n and graph[i+dx[k]][j+dy[k]] == 0 and not visited[i+dx[k]][j+dy[k]]:
-                        blank_cnt += 1
-                tmp.append([i,j,cnt])  
-                tmp_blank.append([i,j, blank_cnt])
-    for x,y, count in tmp:
-        graph[x][y] += count
+    temp = []
+    temp_blank = []
+    for x in range(n):
+        for y in range(n):
+            if arr[x][y] > 0:
+                count = 0
+                blank = 0
+                for i in range(4):
+                    nx, ny = x + dx[i], y + dy[i]
+                    if 0 <= nx < n and 0 <= ny < n and arr[nx][ny] > 0:
+                        count += 1
+                    if 0 <= nx < n and 0 <= ny < n and arr[nx][ny] == 0:
+                        blank += 1
+                temp.append([x, y, count])
+                if blank > 0:
+                    temp_blank.append([x, y, blank])
 
-    return tmp_blank
+    for x, y, count in temp:
+        arr[x][y] += count
+
+    return temp_blank
 
 def seed(tmp):
     for x,y,cnt in tmp:
