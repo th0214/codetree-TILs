@@ -16,13 +16,13 @@ def grow():
                 cnt = 0
                 blank_cnt = 0
                 for k in range(4):
-                    if 0 <= i+dx[k] < n and 0 <= j+dy[k] < n and graph[i+dx[k]][j+dy[k]] > 0 and not visited[i+dx[k]][j+dy[k]]:
+                    if 0 <= i+dx[k] < n and 0 <= j+dy[k] < n and graph[i+dx[k]][j+dy[k]] > 0:
                         cnt += 1
-                    if 0 <= i+dx[k] < n and 0 <= j+dy[k] < n and graph[i+dx[k]][j+dy[k]] == 0 and not visited[i+dx[k]][j+dy[k]]:
+                    if 0 <= i+dx[k] < n and 0 <= j+dy[k] < n and graph[i+dx[k]][j+dy[k]] == 0:
                         blank_cnt += 1
                         
                 tmp_blank.append([i,j, blank_cnt])
-                graph[i][j] = graph[i][j] + cnt
+                graph[i][j] += cnt
     return tmp_blank
 
 def seed(tmp):
@@ -83,8 +83,8 @@ for _ in range(m):
         for j in range(n):
             if graph[i][j] > 0:
                 duk(i,j)
-    answer += total
+    
     remove()
     duk_remove()
-
+    answer += total
 print(answer)
