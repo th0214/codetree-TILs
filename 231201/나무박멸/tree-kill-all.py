@@ -29,61 +29,51 @@ def grow():
     return tmp_blank
 
 def seed(tmp):
-    tmp_graph = []
     for x,y,cnt in tmp:
-        if cnt > 0:
             val = graph[x][y]//cnt
             for k in range(4):
-                if 0 <= x+dx[k] < n and 0 <= y+dy[k] < n and graph[x+dx[k]][y+dy[k]] == 0 and not visited[x+dx[k]][y+dy[k]]:
-                    tmp_graph.append([x+dx[k],y+dy[k],val])
-                
-    
-    for x,y,val in tmp_graph:
-        graph[x][y] += val
+                nx, ny = x + dx[k], y + dy[k]
+                if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 0 and not visited[nx][ny]:
+                    graph[nx][ny] += val
 
 ddx = [-1,1,-1,1]
 ddy = [1,1,-1,-1]
 visited = [[0] * n for _ in range(n)]
 
-def duk(x,y):
-    global total, visited
-    t_list = [[0] * n for _ in range(n)]
-    standard = graph[x][y]
-    t_list[x][y] = c
-    for i in range(4):
-        for j in range(1,k+1):
-            nx, ny = x + (ddx[i] * j), y + (ddy[i] * j)
-            if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] > 0:
-                standard += graph[nx][ny]
-                t_list[nx][ny] = c
-            elif 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 0:
-                t_list[nx][ny] = c
-                break
-            elif 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == -1:
-                break
-                
-    if total < standard:
-        total = standard
-        visited = t_list.copy()
-    
+def duk():
+    global answer
+    max_tree=0
+    max_x,max_y = 0,0
 
-def duk_remove(visited):
-    for i in range(n):
-        for j in range(n):
-            if visited[i][j] > 0:
-                visited[i][j] -= 1
-                graph[i][j] = 0
+    for x in range(n):
+        for y in range(n):
+            if graph[x][y] > 0:
+                tree_sum = graph[x][y]
+                for i in range(4):
+                    for j in range(1,k+1):
+                        nx, ny = x + (ddx[i] * j), y + (ddy[i] * j)
+                        if nx < 0 or nx >= n or ny < 0 or ny >= n or graph[nx][ny] == 0 or graph[nx][ny] == -1:
+                            break
+                        tree_sum += graph[nx][ny]
+                
+                if tree_sum > max_tree:
+                    max_tree = tree_sum
+                    max_x, max_y = x,y
+    
+    if max_tree > 0:
+        answer += max_tree
+        graph[max_x][max_y] = 0
+        for i in range(4):
+            for j in range(1, k + 1):
+                nx, ny = max_x + ddx[i] * j, max_y + ddy[i] * j
+                if nx < 0 or nx >= n or ny < 0 or ny >= n or graph[nx][ny] == 0:
+                    break
+                graph[nx][ny] = 0
+    
 
 for _ in range(m):
     tmp_blank = grow()
     seed(tmp_blank)
-
-    total = 0
-    for i in range(n):
-        for j in range(n):
-            if graph[i][j] > 0:
-                duk(i,j)
-                
-    duk_remove(visited)
-    answer += total
+    duk()
+   
 print(answer)
