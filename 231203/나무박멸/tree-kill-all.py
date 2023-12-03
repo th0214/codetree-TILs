@@ -63,6 +63,8 @@ def killer(x,y):
                 elif graph[nx][ny] > 0:
                     cnt += graph[nx][ny]
                     cur_x, cur_y = nx, ny
+            else:
+                break
     if score < cnt:
         score = cnt
         max_x = x
