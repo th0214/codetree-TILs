@@ -1,3 +1,4 @@
+from copy import deepcopy
 n, m, k, c = map(int, input().split())
 
 graph = [list(map(int,input().split())) for _ in range(n)]
@@ -17,7 +18,7 @@ def grow():
     for i in range(n):
         for j in range(n):
             if graph[i][j] > 0:
-                cnt = 0
+
                 for a in range(4):
                     nx, ny = i + dx[a], j + dy[a]
                     if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] > 0:
@@ -29,21 +30,28 @@ def grow():
                 
 
 def seed():
-    tmp = [[0] * n for _ in range(n)]
+    tmp = deepcopy(graph)
+
     for i in range(n):
         for j in range(n):
             if graph[i][j] > 0:
                 cnt = 0
-                tmp_l = []
+
                 for a in range(4):
                     nx, ny = i + dx[a], j + dy[a]
                     if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 0 and visited[nx][ny] <= 0:
                         cnt += 1
-                        tmp_l.append([nx,ny])
-                if cnt > 0:
+                        
+                if cnt != 0:
                     tmp_cnt = graph[i][j] // cnt
-                    for b in tmp_l:
-                        tmp[b[0]][b[1]] += tmp_cnt
+                    
+                    for a in range(4):
+                        nx, ny = i + dx[a], j + dy[a]
+                        if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 0 and visited[nx][ny] <= 0:
+                            tmp[nx][ny] += tmp_cnt
+    
+    return tmp
+
     
     for i in range(n):
         for j in range(n):
@@ -95,7 +103,8 @@ def remove_killer():
 
 for _ in range(m):
     grow()
-    seed()
+    graph = seed()
+
     score = 0
     max_x, max_y = 0, 0
     for i in range(n):
