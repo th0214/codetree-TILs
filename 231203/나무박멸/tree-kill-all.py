@@ -34,9 +34,10 @@ def seed():
                     if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 0 and visited[nx][ny] <= 0:
                         cnt += 1
                         tmp_l.append([nx,ny])
-                tmp_cnt = graph[i][j] // cnt
-                for b in tmp_l:
-                    tmp[b[0]][b[1]] += tmp_cnt
+                if cnt > 0:
+                    tmp_cnt = graph[i][j] // cnt
+                    for b in tmp_l:
+                        tmp[b[0]][b[1]] += tmp_cnt
     
     for i in range(n):
         for j in range(n):
@@ -81,7 +82,7 @@ def remove_killer():
         for j in range(n):
             if visited[i][j] > 0:
                 visited[i][j] -= 1
-                
+
 for _ in range(m):
     grow()
     seed()
