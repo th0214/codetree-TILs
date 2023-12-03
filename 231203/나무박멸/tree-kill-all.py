@@ -54,6 +54,7 @@ def killer(x,y):
     global score, max_x, max_y
     cnt = graph[x][y]
     for i in range(4):
+        cur_x, cur_y = x, y
         for j in range(1, k+1):
             nx, ny = x + ddx[i] * j, y + ddy[i] * j
             if 0 <= nx < n and 0 <= ny < n:
@@ -61,6 +62,7 @@ def killer(x,y):
                     break
                 elif graph[nx][ny] > 0:
                     cnt += graph[nx][ny]
+                    cur_x, cur_y = nx, ny
     if score < cnt:
         score = cnt
         max_x = x
