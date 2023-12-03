@@ -12,6 +12,7 @@ ddy = [1,1,-1,-1]
 
 
 def grow():
+    temp_graph = [row[:] for row in graph]
     for i in range(n):
         for j in range(n):
             if graph[i][j] > 0:
@@ -20,7 +21,8 @@ def grow():
                     nx, ny = i + dx[a], j + dy[a]
                     if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] > 0:
                         cnt += 1
-                graph[i][j] += cnt
+                temp_graph[i][j] += cnt
+    return temp_graph
 
 def seed():
     tmp = [[0] * n for _ in range(n)]
@@ -84,7 +86,7 @@ def remove_killer():
                 visited[i][j] -= 1
 
 for _ in range(m):
-    grow()
+    graph = grow()
     seed()
     score = 0
     max_x, max_y = 0, 0
