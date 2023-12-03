@@ -95,5 +95,5 @@ for _ in range(m):
     kill_tree(max_x, max_y)
     remove_killer()
 
-    answer = score
+    answer += score
 print(answer)
