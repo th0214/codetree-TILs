@@ -45,11 +45,8 @@ def t_move(x,y,direction):
     nx, ny = x + dtx[direction], y + dty[direction]
 
     if not (0 <= nx < n and 0 <= ny < n):
-        if direction <= 1:
-            direction = 1 - direction
-        else:
-            direction = 5 - direction
-        nx, ny = x + dtx[direction], y + dty[direction]
+        direction = 1 - direction if direction < 2 else 5 - direction
+        nx, ny = x + dxs[direction], y + dys[direction]
         
 
     if (nx,ny) != seeker_dir:
