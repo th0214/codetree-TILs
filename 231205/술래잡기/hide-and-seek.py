@@ -11,11 +11,11 @@ ans = 0
 forward_facing = True
 
 for _ in range(m):
-    x,y,d = map(int, input().split())
+    x,y,d = tuple(map(int, input().split()))
     hider[x-1][y-1].append(d)
 
 for _ in range(h):
-    x,y = map(int, input().split())
+    x,y = tuple(map(int, input().split()))
     tree[x-1][y-1] = 1
 
 def in_range(x, y):
