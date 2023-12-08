@@ -41,14 +41,18 @@ def check_dir2(nx,ny):
 
 
 def check_gun(nx,ny):
-    if person[nx][ny][3] == 0 and max(graph[nx][ny]) > 0:
+    if person[nx][ny][3] == 0:
         person[nx][ny][3] = max(graph[nx][ny])
         graph[nx][ny].pop(graph[nx][ny].index(max(graph[nx][ny])))
                     
-    elif person[nx][ny][3] > 0 and max(graph[nx][ny]) > 0:
-        if person[nx][ny][3] < max(graph[nx][ny]):
-            person[nx][ny][3] = max(graph[nx][ny])
-            graph[nx][ny].append(max(person[nx][ny][3]))
+    else:
+        maxGun = max(graph[nx][ny])
+        playerGun = person[nx][ny][3]
+        if playerGun >= maxGun:
+            return
+        person[nx][ny][3] = max(graph[nx][ny])
+        graph[nx][ny][graph[nx][ny].index(max(graph[nx][ny]))] = playerGun
+ 
                     
 def rotate_dir(d):
     if d == 0:
