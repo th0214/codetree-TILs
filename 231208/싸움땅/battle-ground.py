@@ -1,6 +1,14 @@
 n, m, k = map(int, input().split())
 
-graph = [list(map(int, input().split())) for _ in range(n)]
+graph = [[[] for _ in range(n)] for _ in range(n)]
+
+for i in range(n):
+    row = list(map(int, input().split()))
+    for j in range(n):
+        if row[j] == 0:
+            continue
+        graph[i][j].append(row[j])
+
 person = [[[] for _ in range(n)] for _ in range(n)]
 
 for i in range(m):
@@ -33,14 +41,14 @@ def check_dir2(nx,ny):
 
 
 def check_gun(nx,ny):
-    if person[nx][ny][3] == 0 and graph[nx][ny] > 0:
-        person[nx][ny][3] = graph[nx][ny]
-        graph[nx][ny] = 0
+    if person[nx][ny][3] == 0 and max(graph[nx][ny]) > 0:
+        person[nx][ny][3] = max(graph[nx][ny])
+        graph[nx][ny].pop(graph[nx][ny].index(max(graph[nx][ny])))
                     
-    elif person[nx][ny][3] > 0 and graph[nx][ny] > 0:
-        if person[nx][ny][3] < graph[nx][ny]:
-            person[nx][ny][3] = graph[nx][ny]
-            graph[nx][ny] = person[nx][ny][3]
+    elif person[nx][ny][3] > 0 and max(graph[nx][ny]) > 0:
+        if person[nx][ny][3] < max(graph[nx][ny]):
+            person[nx][ny][3] = max(graph[nx][ny])
+            graph[nx][ny].append(max(person[nx][ny][3]))
                     
 def rotate_dir(d):
     if d == 0:
@@ -142,5 +150,7 @@ def p_move():
 
 for _ in range(k):
     p_move()
+    print(graph)
+    print(person)
 
 print(*score)
