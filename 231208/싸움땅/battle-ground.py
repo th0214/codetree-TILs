@@ -150,7 +150,5 @@ def p_move():
 
 for _ in range(k):
     p_move()
-    print(graph)
-    print(person)
 
 print(*score)
