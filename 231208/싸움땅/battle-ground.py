@@ -1,158 +1,128 @@
-n, m, k = map(int, input().split())
+N, M, K = map(int, input().split())
 
-graph = [[[] for _ in range(n)] for _ in range(n)]
-
-for i in range(n):
+gunBoard = [[[] for _ in range(N)] for _ in range(N)]
+for i in range(N):
     row = list(map(int, input().split()))
-    for j in range(n):
+    for j in range(N):
         if row[j] == 0:
             continue
-        graph[i][j].append(row[j])
+        gunBoard[i][j].append(row[j])
 
-person = [[[] for _ in range(n)] for _ in range(n)]
+# x, y, dir, str, gun
+playersList = list()
+playersBoard = [[-1 for _ in range(N)] for _ in range(N)]
+for i in range(M):
+    x, y, d, s = map(int, input().split())
+    playersList.append([x - 1, y - 1, d, s, 0])
+    playersBoard[x - 1][y - 1] = i
 
-for i in range(m):
-    x,y,d,s = map(int, input().split())
-    person[x-1][y-1].extend([d,s,i,0])
+scores = [0 for _ in range(M)]
 
-dx = [-1,0,1,0]
-dy = [0,1,0,-1]
-score = [0 for _ in range(m)]
+dx = [-1, 0, 1, 0]
+dy = [0, 1, 0, -1]
 
-def check_dir(i,j,nx,ny):
-    nnx, nny = nx+ dx[person[i][j][0]],  ny + dy[person[i][j][0]]
+def rotateDirection(d):
+    if d + 1 < 4:
+        return d + 1
+    return 0
 
-    while len(person[nnx][nny]) != 0:
-        if len(person[nnx][nny]) >0:
-            person[i][j][0] = (person[i][j][0] + 1) % 4
-            nnx, nny = nx + dx[person[i][j][0]], ny + dy[person[i][j][0]]
-    
-    return nnx, nny
-
-def check_dir2(nx,ny):
-    nnx, nny = nx+ dx[person[nx][ny][0]],  ny + dy[person[nx][ny][0]]
-
-    while len(person[nnx][nny]) != 0:
-        if len(person[nnx][nny]) >0:
-            person[nx][ny][0] = (person[nx][ny][0] + 1) % 4
-            nnx, nny = nx + dx[person[nx][ny][0]], ny + dy[person[nx][ny][0]]
-    
-    return nnx, nny
-
-
-def check_gun(nx,ny):
-    if person[nx][ny][3] == 0:
-        person[nx][ny][3] = max(graph[nx][ny])
-        graph[nx][ny].pop(graph[nx][ny].index(max(graph[nx][ny])))
-                    
-    else:
-        maxGun = max(graph[nx][ny])
-        playerGun = person[nx][ny][3]
-        if playerGun >= maxGun:
-            return
-        person[nx][ny][3] = max(graph[nx][ny])
-        graph[nx][ny][graph[nx][ny].index(max(graph[nx][ny]))] = playerGun
- 
-                    
-def rotate_dir(d):
+def flipDirection(d):
     if d == 0:
         return 2
-    elif d == 1:
+    if d == 1:
         return 3
-    elif d == 2:
+    if d == 2:
         return 0
-    elif d == 3:
+    if d == 3:
         return 1
+    return d
 
-def p_move():
-    number = 0
-    while number != m:
-        moved = False
-        for i in range(n):
-            if moved:
-                    break
-            for j in range(n):
-                if moved:
-                        break
-                if len(person[i][j]) > 0:
-                    if person[i][j][2] == number:
-                        nx, ny = i + dx[person[i][j][0]], j + dy[person[i][j][0]]
-                        if 0 <= nx < n and 0 <= ny < n:
-                            if len(person[nx][ny]) == 0:
-                                person[nx][ny] = person[i][j]
-                                person[i][j] = []
-                                moved = True
-                                check_gun(nx,ny)
+def isVaild(nx, ny):
+    return 0 <= nx < N and 0 <= ny < N
 
-                            else:
-                                f1 = person[nx][ny][1] + person[nx][ny][3]
-                                f2 = person[i][j][1] + person[i][j][3]
+def getMoveCoordinate(i):
+    x, y = playersList[i][0], playersList[i][1]
+    nx, ny = x + dx[playersList[i][2]], y + dy[playersList[i][2]]
+    if not isVaild(nx, ny):
+        playersList[i][2] = flipDirection(playersList[i][2])
+        nx, ny = x + dx[playersList[i][2]], y + dy[playersList[i][2]]
+    return nx, ny
 
-                                if f1 > f2:
-                                    score[person[nx][ny][2]] += f1-f2
+def move(playerIndex, nx, ny):
+    x, y = playersList[playerIndex][0], playersList[playerIndex][1]
+    playersBoard[x][y] = -1
+    
+    playersBoard[nx][ny] = playerIndex
+    playersList[playerIndex][0], playersList[playerIndex][1] = nx, ny
+    return
 
-                                    if person[i][j][3] > 0:
-                                        graph[nx][ny].append(person[i][j][3])
-
-                                    nnx,nny = check_dir(i,j,nx,ny)
-                                    person[nnx][nny] = person[i][j]
-                                    person[i][j] = []
-                                    moved = True
-                                    check_gun(nnx,nny)
-                                else:
-                                    score[person[i][j][2]] += f2 - f1
-
-                                    if person[nx][ny][3] > 0:
-                                        graph[nx][ny].append(person[nx][ny][3])
-                                    
-                                    nnx,nny = check_dir2(nx,ny)
-                                    person[nnx][nny] = person[nx][ny]
-                                    person[nx][ny] = person[i][j]
-                                    moved = True
-                                    check_gun(nnx,nny)
-                            
-                            
-                        else:
-                            person[i][j][0] = rotate_dir(person[i][j][0])
-                            nx, ny = i + dx[person[i][j][0]], j + dy[person[i][j][0]]
-                            if len(person[nx][ny]) == 0:
-                                person[nx][ny] = person[i][j]
-                                person[i][j] = []
-                                moved = True
-                                check_gun(nx,ny)
-
-                            else:
-                                f1 = person[nx][ny][1] + person[nx][ny][3]
-                                f2 = person[i][j][1] + person[i][j][3]
-
-                                if f1 > f2:
-                                    score[person[nx][ny][2]] += f1-f2
-
-                                    if person[i][j][3] > 0:
-                                        graph[nx][ny].append(person[i][j][3])
-
-                                    nnx,nny = check_dir(i,j,nx,ny)
-                                    person[nnx][nny] = person[i][j]
-                                    person[i][j] = []
-                                    moved = True
-                                    check_gun(nnx,nny)
-                                else:
-                                    score[person[i][j][2]] += f2 - f1
-
-                                    if person[nx][ny][3] > 0:
-                                        graph[nx][ny].append(person[nx][ny][3])
-                                    
-                                    nnx,nny = check_dir2(nx,ny)
-                                    person[nnx][nny] = person[nx][ny]
-                                    person[nx][ny] = person[i][j]
-                                    moved = True
-                                    check_gun(nnx,nny)
-                            
-                            
-        number += 1
+def getGun(playerIndex, nx, ny):
+    if playersList[playerIndex][4] == 0:
+        playersList[playerIndex][4] = max(gunBoard[nx][ny])
+        gunBoard[nx][ny].pop(gunBoard[nx][ny].index(max(gunBoard[nx][ny])))
+    else:
+        maxGun = max(gunBoard[nx][ny])
+        playerGun = playersList[playerIndex][4]
+        if playerGun >= maxGun:
+            return
+        playersList[playerIndex][4] = max(gunBoard[nx][ny])
+        gunBoard[nx][ny][gunBoard[nx][ny].index(max(gunBoard[nx][ny]))] = playerGun
+    return
 
 
-for _ in range(k):
-    p_move()
+def fight(player1Index, player2Index):
+    if playersList[player1Index][3] + playersList[player1Index][4] > playersList[player2Index][3] + playersList[player2Index][4]:
+        return player1Index, player2Index, abs(playersList[player1Index][3] + playersList[player1Index][4] - playersList[player2Index][3] - playersList[player2Index][4])
+    elif playersList[player1Index][3] + playersList[player1Index][4] < playersList[player2Index][3] + playersList[player2Index][4]:
+        return player2Index, player1Index, abs(playersList[player1Index][3] + playersList[player1Index][4] - playersList[player2Index][3] - playersList[player2Index][4])
+    else:
+        if playersList[player1Index][3] > playersList[player2Index][3]:
+            return player1Index, player2Index, abs(playersList[player1Index][3] + playersList[player1Index][4] - playersList[player2Index][3] - playersList[player2Index][4])
+        else:
+            return player2Index, player1Index, abs(playersList[player1Index][3] + playersList[player1Index][4] - playersList[player2Index][3] - playersList[player2Index][4])
 
-print(*score)
+def dropAllGuns(playerIndex, nx, ny):
+    gunBoard[nx][ny].append(playersList[playerIndex][4])
+    playersList[playerIndex][4] = 0
+
+def getLoserMovement(i):
+    x, y = playersList[i][0], playersList[i][1]
+    nx, ny = x + dx[playersList[i][2]], y + dy[playersList[i][2]]
+    while not (isVaild(nx, ny) and playersBoard[nx][ny] == -1) :
+        playersList[i][2] = rotateDirection(playersList[i][2])
+        nx, ny = x + dx[playersList[i][2]], y + dy[playersList[i][2]]
+    return nx, ny
+
+def play():
+    for i in range(M):
+        nx, ny = getMoveCoordinate(i)
+            
+        if playersBoard[nx][ny] == -1:
+            if len(gunBoard[nx][ny]) == 0:
+                move(i, nx, ny)
+                continue
+            getGun(i, nx, ny)
+            move(i, nx, ny)
+        else:
+
+            winnerIndex, loserIndex, scoreDiff = fight(i, playersBoard[nx][ny])
+            scores[winnerIndex] += scoreDiff
+            move(i, nx, ny)
+            # 진 플레이어
+            dropAllGuns(loserIndex, nx, ny)
+            lx, ly = getLoserMovement(loserIndex)
+            move(loserIndex, lx, ly)
+            if len(gunBoard[lx][ly]) != 0:
+                getGun(loserIndex, lx, ly)
+            
+            # 이긴 플레이어
+            getGun(winnerIndex, nx, ny)
+            playersBoard[nx][ny] = winnerIndex
+    return
+
+
+for _ in range(K):
+    play()
+
+for i in scores:
+    print(i, end=" ")
