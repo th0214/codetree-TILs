@@ -105,18 +105,21 @@ def max_check():
 
 def fix_tarret():
     tarret_num = 0
-
+    turret = []
     for i in range(N):
         for j in range(M):
             if graph[i][j] == 0:
                 continue
             tarret_num += 1
-            if attack[i][j] == False:
-                graph[i][j] += 1
+            if attack[i][j]:
+                continue
+            turret.append((i,j))
+
     if tarret_num == 1:
         print(max_check())
         exit(0)
-    
+    for x,y in turret:
+        graph[x][y] += 1
 
 for k in range(K):
     attack = [[False] * M for _ in range(N)]
