@@ -3,148 +3,144 @@ from collections import deque
 N, M, K = map(int, input().split())
 
 graph = [list(map(int, input().split())) for _ in range(N)]
-graph_attack = [[0] * M for _ in range(N)]
-time = 1
+attack_graph = [[0] * M for _ in range(N)]
 dx = [0,1,0,-1]
 dy = [1,0,-1,0]
+t = 1
 
-def attack_check():
-    power = 5001
-    ax = ay = 0 
+def select_attack():
+    max_num = 5001
+    a_x = a_y = 0
+
+    for i in range(N):
+        for j in range(N):
+            if graph[i][j] == 0:
+                continue
+            if graph[i][j] < max_num:
+                max_num = graph[i][j]
+                a_x, a_y = i, j
+            elif graph[i][j] == max_num:
+                if attack_graph[i][j] > attack_graph[a_x][a_y]:
+                    a_x, a_y = i, j
+                elif attack_graph[i][j] == attack_graph[a_x][a_y]:
+                    if i+j > a_x + a_y:
+                       a_x, a_y = i,j
+                    elif i+j == a_x + a_y:
+                        if j > a_y:
+                            a_x, a_y = i, j
+    return a_x, a_y
+                         
+def select_target():
+    min_num = -1
+    t_x = t_y = 0
+
     for i in range(N):
         for j in range(M):
             if graph[i][j] == 0:
                 continue
-            if graph[i][j] < power:
-                power = graph[i][j]
-                ax,ay = i, j
-            elif graph[i][j] == power:
-                if graph_attack[i][j] > graph_attack[ax][ay]:
-                    ax, ay = i, j
-                elif graph_attack[i][j] == graph_attack[ax][ay]:
-                    if i + j > ax + ay:
-                        ax, ay = i, j
-                    elif i + j == ax + ay:
-                        if j > ay:
-                            ay = y
-    return ax, ay
-
-def target_check(a_i, a_j):
-    power = -1
-    tx = ty = 0
-    for i in range(N):
-        for j in range(M):
-            if graph[i][j] == 0:
-                continue
-            if i == a_i and j == a_j:
-                continue
-            if graph[i][j] > power:
-                power = graph[i][j]
-                tx, ty = i, j
-            elif graph[i][j] == power:
-                if graph_attack[i][j] < graph_attack[tx][ty]:
-                    tx, ty = i, j
-                elif graph_attack[i][j] == graph_attack[tx][ty]:
-                    if i+j < tx+ty:
-                        tx,ty = i,j
-                    elif i+j == tx+ty:
-                        if j < ty:
-                            tx, ty = i, j
-    return tx, ty
-
-def laser(ax, ay, tx, ty):
-    q = deque()
-    q.append((ax,ay,[]))
+            if graph[i][j] > min_num:
+                min_num = graph[i][j]
+                t_x, t_y = i, j
+            elif graph[i][j] == min_num:
+                if attack_graph[i][j] < attack_graph[t_x][t_y]:
+                    t_x, t_y == i, j
+                elif attack_graph[i][j] == attack_graph[t_x][t_y]:
+                    if i+j < t_x + t_y:
+                        t_x, t_y = i, j
+                    elif i+j == t_x+t_y:
+                        if j < t_y:
+                            t_x, t_y = i, j
+    return t_x, t_y 
+            
+def lazer(a_x, a_y, t_x, t_y):
     visited = [[False] * M for _ in range(N)]
-    visited[ax][ay] = True
+    q = deque()
+    visited[a_x][a_y] = True
+    q.append((a_x,a_y,[]))
     while q:
-        x,y, route = q.popleft()
+        x, y, path = q.popleft()
         for i in range(4):
-            nx = (x + dx[i]) % N
-            ny = (y + dy[i]) % M
-            if visited[nx][ny]:
+            nx, ny = (x + dx[i]) % N, (y + dy[i]) % M
+            if visited[nx][ny] == True:
                 continue
             if graph[nx][ny] == 0:
                 continue
             
-            if nx == tx and ny == ty:
+            if nx == t_x and ny == t_y:
                 graph[nx][ny] -= point
-                for rx, ry in route:
+                for rx, ry in path:
                     graph[rx][ry] -= half_point
                     attack[rx][ry] = True
                 return True
-            
-            tmp_route = route[:]
-            tmp_route.append((nx,ny))
-            visited[nx][ny] = True
-            q.append((nx,ny,tmp_route))
 
+            tmp_path = path[:]
+            tmp_path.append((nx,ny))
+            visited[nx][ny] = True
+            q.append((nx,ny,tmp_path))
     return False
 
-def shell(ax, ay, tx, ty):
-    graph[tx][ty] -= point
+def bomb(a_x, a_y, t_x, t_y):
+    graph[t_x][t_y] -= point
     ddx = dx + [1,1,-1,-1]
-    ddy = dy + [-1,1,-1,1]
+    ddy = dy + [1,-1,-1,1]
 
-    for d in range(8):
-        nx = (tx + ddx[d]) % N
-        ny = (ty + ddy[d]) % M
-        if ax == nx and ay == ny:
+    for i in range(8):
+        nx = (t_x + ddx[i]) % N
+        ny = (t_y + ddy[i]) % M
+        attack[nx][ny] = True
+        if a_x == t_x and a_y == t_y:
             continue
         graph[nx][ny] -= half_point
-        attack[nx][ny] = True
 
-def break_check():
+def check_crush():
     for i in range(N):
-        for j in range(M):
+        for j in range(N):
+            if graph[i][j] == 0:
+                continue
             if graph[i][j] < 0:
                 graph[i][j] = 0
 
 def max_check():
     return max([max(line) for line in graph])
 
-def turret_check():
-    turret = []
-    turret_cnt = 0
+def fix_tarret():
+    tarret_num = 0
+
     for i in range(N):
         for j in range(M):
             if graph[i][j] == 0:
                 continue
-            turret_cnt += 1
-            if attack[i][j]:
-                continue
-            turret.append((i,j))
-    
-    if turret_cnt == 1:
+            tarret_num += 1
+            if attack[i][j] == False:
+                graph[i][j] += 1
+    if tarret_num == 1:
         print(max_check())
         exit(0)
-    for x,y in turret:
-        graph[x][y] += 1
-            
-            
+    
+
 for k in range(K):
     attack = [[False] * M for _ in range(N)]
 
-    # 공격자 선정
-    attack_i, attack_j = attack_check()
-    graph[attack_i][attack_j] += N + M
-    point = graph[attack_i][attack_j]
-    half_point = point // 2
-    attack[attack_i][attack_j] = True
-    graph_attack[attack_i][attack_j] = time
-    time += 1
-
-    # 공격자 공격
-    target_i, target_j = target_check(attack_i, attack_j)
-    attack[target_i][target_j] = True
-
-    if not laser(attack_i, attack_j, target_i, target_j):
-        shell(attack_i, attack_j, target_i, target_j)
+    #공격자 선정
+    a_x, a_y = select_attack()
+    graph[a_x][a_y] += N+M
+    point = graph[a_x][a_y]
+    half_point = point//2
+    attack[a_x][a_y] = True
+    attack_graph[a_x][a_y] += t
+    t += 1
     
-    # 포탑 부셔짐 체크
-    break_check()
+    #공격자의 공격
+    t_x, t_y = select_target()
+    attack[t_x][t_y] = True
+
+    if not lazer(a_x, a_y, t_x, t_y):
+        bomb(a_x, a_y, t_x, t_y)
+    
+    #포탑 부셔짐
+    check_crush()
 
     #포탑 정비
-    turret_check()
+    fix_tarret()
 
 print(max_check())
