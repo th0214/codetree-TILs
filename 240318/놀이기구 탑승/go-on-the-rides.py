@@ -29,7 +29,7 @@ for t in range(n*n):
                             blank += 1
                 check.append([i,j,pre,blank])
     
-    check.sort(key=lambda x: (-x[2],-x[3],x[i],x[j]))
+    check.sort(key=lambda x: (-x[2],-x[3],x[0],x[1]))
     graph[check[0][0]][check[0][1]] = n0
 
 
