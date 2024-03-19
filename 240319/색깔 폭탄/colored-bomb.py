@@ -39,7 +39,7 @@ def comb(x,y,graph,visited):
     for x,y in red:
         visited[x][y] = 0
     
-    return [len(check+red), len(red), check+red]
+    return [len(check+red), len(red), check+red, check]
 
 
 def delete(l):
@@ -84,8 +84,8 @@ while True:
                     tmp.append(check)
 
     def sort_condition(x):
-        max_row = max(x[2], key=lambda item: item[0])[0]  # 행이 가장 큰 값
-        min_col = min(x[2], key=lambda item: item[1])[1]  # 열이 가장 작은 값
+        max_row = max(x[3], key=lambda item: item[0])[0]  # 행이 가장 큰 값
+        min_col = min(x[3], key=lambda item: item[1])[1]  # 열이 가장 작은 값
         return (-x[0], x[1], -max_row, min_col)
 
     tmp.sort(key=sort_condition)
