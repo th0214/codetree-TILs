@@ -1,11 +1,22 @@
 from collections import deque
 
-def find_block(x,y,block_num):
+n, m = map(int, input().split())
+
+graph = [list(map(int, input().split())) for _ in range(n)]
+dx = [-1,1,0,0]
+dy = [0,0,-1,1]
+score = 0
+def comb(x,y,graph,visited):
+
+    check = [[x,y]]
+    red = []
+
+    visited[x][y] = 1
+    color = graph[x][y]
+    
+
     q = deque()
     q.append((x,y))
-
-    normals = [[x,y]]
-    rainbows = []
 
     while q:
         x, y = q.popleft()
@@ -13,79 +24,78 @@ def find_block(x,y,block_num):
         for i in range(4):
             nx = x + dx[i]
             ny = y + dy[i]
-            if 0 <= nx < N and 0 <= ny < N:
-                if arr[nx][ny] == 0 and visited[nx][ny] == 0:
-                    q.append((nx,ny))
+
+            if 0 <= nx < n and 0 <= ny < n and visited[nx][ny] == 0:
+                if graph[nx][ny] == color:
+                    check.append([nx,ny])
                     visited[nx][ny] = 1
-                    rainbows.append([nx,ny])
-                elif arr[nx][ny] == block_num and visited[nx][ny] == 0:
                     q.append((nx,ny))
+                if graph[nx][ny] == 0:
                     visited[nx][ny] = 1
-                    normals.append([nx,ny])
-    for x,y in rainbows:
+                    red.append([nx,ny])
+                    q.append((nx,ny))
+    
+
+    for x,y in red:
         visited[x][y] = 0
+    
+    return [len(check+red), len(red), check+red]
 
-    return [len(normals + rainbows), len(rainbows), normals+rainbows]
 
-def remove_block(group):
+def delete(l):
     global score
 
-    score += group[0] ** 2
+    score += l[0][0] ** 2
 
-    for x, y in group[2]:
-        arr[x][y] = -2
+    for x, y in l[0][2]:
+        graph[x][y] = -2
+    
 
-def gravity():
-    # N-2인 이유 -> N-1은 가장 행이 아래여서 더이상 내려갈 수 없다.
-    for i in range(N-2, -1, -1):
-        for j in range(N):
-            if arr[i][j] != -1:
-                pointer = i
+def move(graph):
+    for i in range(n-2, -1, -1):
+        for j in range(n):
+            if graph[i][j] != -1:
+                standard = i
 
-                while pointer + 1 < N and arr[pointer+1][j] == -2:
-                    arr[pointer+1][j] = arr[pointer][j]
-                    arr[pointer][j] = -2
-                    pointer += 1
+                while standard+1 < n and graph[standard+1][j] == -2:
+                    graph[standard+1][j] = graph[standard][j]
+                    graph[standard][j] = -2
+                    standard += 1
 
-def rotate():
-    global arr
+def rotate90(graph):
+    tmp = [[0] * n for _ in range(n)]
 
-    tmp = [[0] * N for _ in range(N)]
-    for i in range(N):
-        for j in range(N):
-            tmp[N-j-1][i] = arr[i][j]
-    arr = tmp
+    for i in range(n):
+        for j in range(n):
+            tmp[n-j-1][i] = graph[i][j]
+    
+    return tmp
 
-N, M = map(int, input().split())
-
-arr = [deque(map(int,input().split())) for _ in range(N)]
-
-dx = [1,0,-1,0]
-dy = [0,1,0,-1]
-
-score = 0
 
 while True:
-    visited = [[0] * N for _ in range(N)]
-    groups = []
+    tmp = []
+    visited = [[0]*n for _ in range(n)]
 
-    for i in range(N):
-        for j in range(N):
-            if arr[i][j] >= 1 and visited[i][j] == 0:
-                visited[i][j] = 1
-                group = find_block(i,j,arr[i][j])
+    for i in range(n):
+        for j in range(n):
+            if graph[i][j] >= 1 and visited[i][j] == 0:
+                check = comb(i,j,graph,visited)
+                if check[0] >= 2:
+                    tmp.append(check)
 
-                if group[0] >= 2:
-                    groups.append(group)
+    def sort_condition(x):
+        max_row = max(x[2], key=lambda item: item[0])[0]  # 행이 가장 큰 값
+        min_col = min(x[2], key=lambda item: item[1])[1]  # 열이 가장 작은 값
+        return (-x[0], x[1], -max_row, min_col)
 
-    groups.sort(reverse=True)
+    tmp.sort(key=sort_condition)
 
-    if not groups:
+    if len(tmp) == 0:
         break
 
-    remove_block(groups[0])
-    gravity()
-    rotate()
-    gravity()
-
+    delete(tmp)
+    move(graph)
+    graph = rotate90(graph)
+    move(graph)
+    
 print(score)
