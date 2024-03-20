@@ -2,37 +2,15 @@ from collections import deque
 
 n, m = map(int, input().split())
 
-graph = [list(map(int, input().split())) for _ in range(n)]
-
+maps = [list(map(int,input().split())) for _ in range(n)]
 dice = [1,2,3,4,5,6]
 
 dx = [0,1,0,-1]
 dy = [1,0,-1,0]
-d = 0
-x,y = 0, 0
-result = 0
 
-def score(nx, ny, graph):
-    visited = [[0] * n for _ in range(n)]
-    q = deque()
-    q.append((nx,ny))
-    visited[nx][ny] = 1
-    standard = graph[nx][ny]
-    cnt = 1
+x,y,dir,ans = 0,0,0,0
 
-    while q:
-        x,y = q.popleft()
-        for i in range(4):
-            xx, yy = x + dx[i], y + dy[i]
-
-            if 0 <= xx < n and 0 <= yy < n and visited[xx][yy] == 0:
-                if graph[xx][yy] == standard:
-                    visited[xx][yy] = 1
-                    q.append((xx,yy))
-                    cnt += 1
-    return cnt * standard
-
-def move(x,y,d):
+def move(x,y,dir):
     global dice
 
     # 동쪽
@@ -47,27 +25,42 @@ def move(x,y,d):
     # 북쪽
     else:
         dice = [dice[1],dice[5],dice[2],dice[3],dice[0],dice[4]]
+    
+    if dice[5] > maps[x][y]:
+        dir = (dir+1) % 4
+    elif dice[5] < maps[x][y]:
+        dir = (dir+3) % 4
 
-    if graph[nx][ny] > dice[5]:
-            d = (d-1) % 4
+    return dir
 
-    elif graph[nx][ny] < dice[5]:
-            d = (d+1) % 4
 
-    return d
+def bfs(x,y,an):
+    q = deque()
+    q.append((x,y))
+    visited = [[0]*n for _ in range(n)]
+    sum_an = 1
+    visited[x][y] = 1
+
+    while q:
+        a,b = q.popleft()
+
+        for i in range(4):
+            nx, ny = a + dx[i], b + dy[i]
+            if 0 <= nx < n and 0 <= ny < n and visited[nx][ny] == 0 and maps[nx][ny] == an:
+                visited[nx][ny] = 1
+                q.append((nx,ny))
+                sum_an += 1
+
+    return sum_an * an
 
 for _ in range(m):
+    nx, ny = x + dx[dir], y + dy[dir]
+    if not 0 <= nx < n or not 0 <= ny < n:
+        nx, ny = x + dx[dir] * (-1), y + dy[dir] * (-1)
+        dir = (dir+2) % 4
 
-    nx = x + dx[d]
-    ny = y + dy[d]
-    
-    if not (0 <= nx < n and 0 <= ny < n):
-        nx = x + dx[d] * (-1)
-        ny = y + dy[d] * (-1)
-        d = (d+2) % 4
+    dir = move(nx,ny,dir)
+    ans += bfs(nx,ny,maps[nx][ny])
+    x,y = nx,ny
 
-    d = move(nx,ny,d)
-    x,y = nx, ny
-    result += score(nx,ny,graph)
-
-print(result)
+print(ans)
