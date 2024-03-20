@@ -46,8 +46,8 @@ def change(graph):
 
             direction = (direction+1) % 4
 
-            # if over_range:
-            #     break
+            if over_range:
+                break
         s += 1
     return tmp
 
