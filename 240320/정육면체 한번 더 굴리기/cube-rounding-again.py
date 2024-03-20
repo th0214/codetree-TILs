@@ -62,8 +62,8 @@ for _ in range(m):
     ny = y + dy[d]
     
     if not (0 <= nx < n and 0 <= ny < n):
-        nx = x - dx[d]
-        ny = y - dy[d]
+        nx = x + dx[d] * (-1)
+        ny = y + dy[d] * (-1)
         d = (d+2) % 4
 
     d = move(nx,ny,d)
