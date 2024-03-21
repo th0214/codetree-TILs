@@ -75,7 +75,7 @@ def select_packman_move(x,y,cnt,eat,tmp):
                 select_packman_move(nx,ny,cnt+1,eat+len(graph[nx][ny][0]),tmp+[i])
                 visited[nx][ny] = False
             else:
-                select_packman_move(nx,ny,cnt+1,eat, tmp+[d])
+                select_packman_move(nx,ny,cnt+1,eat, tmp+[i])
 
 def move_packman(x,y):
     global die, packman
@@ -127,8 +127,6 @@ for _ in range(t):
     
     reduce_die()
     born()
-    # print(graph)
-    # print(packman)
 
 for i in range(4):
     for j in range(4):
