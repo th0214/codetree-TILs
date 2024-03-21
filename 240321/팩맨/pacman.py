@@ -31,23 +31,22 @@ def move():
     for i in range(4):
         for j in range(4):
             for k in graph[i][j][0]:
-                if k > 0:
-                    cnt = 1
-                    d = k
-                    while True:
-                        ni = i + dx[d]
-                        nj = j + dy[d]
+                cnt = 1
+                d = k
+                while True:
+                    ni = i + dx[d]
+                    nj = j + dy[d]
 
-                        if cnt == 8:
-                            tmp[i][j][0] = graph[i][j][0]
-                            break
+                    if cnt == 8:
+                        tmp[i][j][0] = graph[i][j][0]
+                        break
 
-                        if not (0 <= ni < 4 and 0 <= nj < 4) or die[ni][nj] > 0 or [ni, nj] == packman:
-                            d = (d+1) % 8
-                            cnt += 1
-                        else:
-                            tmp[ni][nj][0].append(d)
-                            break
+                    if not (0 <= ni < 4 and 0 <= nj < 4) or die[ni][nj] > 0 or [ni, nj] == packman:
+                        d = (d+1) % 8
+                        cnt += 1
+                    else:
+                        tmp[ni][nj][0].append(d)
+                        break
     
     for i in range(4):
         for j in range(4):
@@ -122,17 +121,16 @@ for _ in range(t):
 
     copy()
     move()
-    
     max_fish_count = -1
     select_packman_move(packman[0],packman[1],0,0,[])
     move_packman(packman[0],packman[1])
-    
     reduce_die()
     born()
 
+    
+
 for i in range(4):
     for j in range(4):
-        if len(graph[i][j][0]) > 0:
-            result += 1
+            result += len(graph[i][j][0])
 
 print(result)
