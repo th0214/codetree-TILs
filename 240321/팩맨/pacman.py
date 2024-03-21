@@ -31,7 +31,7 @@ def move():
     for i in range(4):
         for j in range(4):
             for k in graph[i][j][0]:
-                cnt = 1
+                cnt = 0
                 d = k
                 while True:
                     ni = i + dx[d]
@@ -124,10 +124,11 @@ for _ in range(t):
     max_fish_count = -1
     select_packman_move(packman[0],packman[1],0,0,[])
     move_packman(packman[0],packman[1])
+    
     reduce_die()
     born()
-
-    
+    # print(graph)
+    # print(packman)
 
 for i in range(4):
     for j in range(4):
