@@ -28,7 +28,7 @@ def bunsik():
     tmp = deepcopy(graph)
     dx = [-1,0,1,0]
     dy = [0,1,0,-1]
-    
+
     for i in range(n):
         for j in range(n):
             if graph[i][j] > 0:
@@ -56,7 +56,7 @@ def check_kill(i,j,killer):
     cnt = graph[i][j]
     x,y = i,j
     for i in range(4):
-        for j in range(1,5):
+        for j in range(1,k+1):
             nx = x + dx[i] * j
             ny = y + dy[i] * j
 
