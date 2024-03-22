@@ -81,7 +81,7 @@ def kill(killer):
 
     q = deque()
     q.append((i,j))
-    sp[i][j] = c+1
+    sp[i][j] = c
 
     while q:
         x,y = q.popleft()
@@ -93,11 +93,11 @@ def kill(killer):
 
                 if 0 <= nx < n and 0 <= ny < n:
                     if graph[nx][ny] > 0:
-                        sp[nx][ny] = c+1
+                        sp[nx][ny] = c
                     if graph[nx][ny] == -1:
                         break
                     if graph[nx][ny] == 0:
-                        sp[nx][ny] = c+1
+                        sp[nx][ny] = c
                         break
     for i in range(n):
         for j in range(n):
