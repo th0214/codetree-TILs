@@ -67,6 +67,8 @@ def check_kill(i,j,killer):
                         cnt += graph[nx][ny]
                     if graph[nx][ny] == -1 or graph[nx][ny] == 0:
                         break
+                else:
+                    break
     
     if killer[0][2] < cnt:
         killer.pop()
