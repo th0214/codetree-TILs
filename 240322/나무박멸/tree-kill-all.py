@@ -42,6 +42,7 @@ def bunsik(i,j,tmp):
                 if graph[ni][nj] == 0 and sp[ni][nj] == 0:
                     cnt += 1
                     location.append([ni,nj])
+
     for x,y in location:
         tmp[x][y] += (graph[i][j] // cnt)
 
@@ -105,18 +106,17 @@ def minus():
     for i in range(n):
         for j in range(n):
             if sp[i][j] > 0:
-                sp[i][j] -= 0
+                sp[i][j] -= 1
 
 for _ in range(m):
     tmp = [[0] * n for _ in range(n)]
     killer = [[0,0,0]]
-    sp = [[0] * n for _ in range(n)]
 
     for i in range(n):
         for j in range(n):
             if graph[i][j] > 0:
                 grow(i,j)
-    
+
     for i in range(n):
         for j in range(n):
             if graph[i][j] > 0:
@@ -125,6 +125,7 @@ for _ in range(m):
     for i in range(n):
         for j in range(n):
             graph[i][j] += tmp[i][j]
+            
     
     for i in range(n):
         for j in range(n):
