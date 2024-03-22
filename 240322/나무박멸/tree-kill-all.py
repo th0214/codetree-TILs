@@ -63,10 +63,8 @@ def check_kill(i,j,killer):
             if 0 <= nx < n and 0 <= ny < n:
                 if graph[nx][ny] > 0:
                     cnt += graph[nx][ny]
-                if graph[nx][ny] == -1 or graph[nx][ny] == 0:
+                if graph[nx][ny] <= 0:
                     break
-            else:
-                break
     
     if killer[0][2] < cnt:
         killer.pop()
@@ -75,18 +73,12 @@ def check_kill(i,j,killer):
 def kill(killer):
     dx = [-1,-1,1,1]
     dy = [-1,1,-1,1]
-    i,j = killer[0][0], killer[0][1]
+    x,y = killer[0][0], killer[0][1]
 
-    q = deque()
-    q.append((i,j))
-    sp[i][j] = c+1
-
-
-    x,y = q.popleft()
+    sp[x][y] = c+1
 
     for i in range(4):
-        cur_x, cur_y = x,y
-        for j in range(k):
+        for j in range(1, k+1):
             nx = x + (dx[i] * j)
             ny = y + (dy[i] * j)
 
