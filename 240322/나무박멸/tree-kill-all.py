@@ -1,5 +1,4 @@
 from collections import deque
-
 n, m, k, c = map(int, input().split())
 
 graph = [list(map(int, input().split())) for _ in range(n)]
@@ -7,23 +6,22 @@ sp = [[0] * n for _ in range(n)]
 result = 0
 
 def grow(x,y):
+    tmp = [[0] * n for _ in range(n)]
     dx = [-1,0,1,0]
     dy = [0,1,0,-1]
 
-    q = deque()
-    q.append((x,y))
     cnt = 0
-    while q:
-        i,j = q.popleft()
+    
+    for k in range(4):
+        nx, ny = x + dx[k], y + dy[k]
 
-        for k in range(4):
-            ni, nj = i + dx[k], j + dy[k]
+        if 0 <= nx < n and 0 <= ny < n:
+            if graph[nx][ny] > 0:
+                tmp[x][y] += 1
 
-            if 0 <= ni < n and 0 <= nj < n:
-                if graph[ni][nj] > 0:
-                    cnt += 1
-
-    graph[i][j] += cnt 
+    for i in range(n):
+        for j in range(n):
+            graph[i][j] += tmp[i][j]
 
 def bunsik(i,j,tmp):
     dx = [-1,0,1,0]
@@ -81,24 +79,26 @@ def kill(killer):
 
     q = deque()
     q.append((i,j))
-    sp[i][j] = c
+    sp[i][j] = c+1
 
-    while q:
-        x,y = q.popleft()
 
-        for i in range(4):
-            for j in range(1,k+1):
-                nx = x + (dx[i] * j)
-                ny = y + (dy[i] * j)
+    x,y = q.popleft()
 
-                if 0 <= nx < n and 0 <= ny < n:
-                    if graph[nx][ny] > 0:
-                        sp[nx][ny] = c
-                    if graph[nx][ny] == -1:
-                        break
-                    if graph[nx][ny] == 0:
-                        sp[nx][ny] = c
-                        break
+    for i in range(4):
+        cur_x, cur_y = x,y
+        for j in range(k):
+            nx = x + (dx[i] * j)
+            ny = y + (dy[i] * j)
+
+            if 0 <= nx < n and 0 <= ny < n:
+                if graph[nx][ny] > 0:
+                    sp[nx][ny] = c+1
+                if graph[nx][ny] == -1:
+                    break
+                if graph[nx][ny] == 0:
+                    sp[nx][ny] = c+1
+                    break
+
     for i in range(n):
         for j in range(n):
             if sp[i][j] > 0:
