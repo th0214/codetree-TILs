@@ -35,17 +35,16 @@ def can_move(idx,d):
         
         if nr < 0 or nc < 0 or nr + h -1 > L or nc + w - 1 > L:
             return False
-        
 
         for i in range(nr, nr+h):
             for j in range(nc, nc+w):
-                if graph[i][j] == 1 and start != idx:
+                if graph[i][j] == 1:
                     dmg[start] += 1
                 elif graph[i][j] == 2:
                     return False
 
         for i in range(1,N+1):
-            if visited_k[i] == 1:
+            if visited_k[i] == 1 or k[i] <= 0:
                 continue
             if knight[i][0] > nr + h -1 or knight[i][1] > nc + w -1:
                 continue
@@ -55,6 +54,7 @@ def can_move(idx,d):
             q.append((i))
             visited_k[i] = 1
 
+    dmg[idx] = 0
     return True
 
 def move(i,d):
