@@ -44,7 +44,7 @@ def can_move(idx,d):
                     return False
 
         for i in range(1,N+1):
-            if visited_k[i] == 1 or k[i] <= 0:
+            if visited_k[i] == 1 or life[i] <= 0:
                 continue
             if knight[i][0] > nr + h -1 or knight[i][1] > nc + w -1:
                 continue
