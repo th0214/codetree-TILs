@@ -7,7 +7,6 @@ santa_score = [0] * (P+1)
 santa_life = [True] * (P+1)
 santa_stern = [0] * (P+1)
 
-
 L_r, L_c = map(int, input().split())
 graph[L_r-1][L_c-1] = [0,1]
 
@@ -100,9 +99,10 @@ def S_move(num,L_x,L_y):
             f_x, f_y, d = check[0][1],check[0][2], check[0][3]
             
             if graph[f_x][f_y][1] == 2:
+
                 if len(check) > 1:
                     for i in range(1,len(check)):
-                        if graph[check[i][1]][check[i][2]] != 2:
+                        if graph[check[i][1]][check[i][2]][1] != 2:
                             f_x, f_y,d = check[i][1], check[i][2],check[i][3]
                             break
                         else:
@@ -114,17 +114,16 @@ def S_move(num,L_x,L_y):
             f_x,f_y = x,y
 
         # 만약 루돌프가 있다면
-
         if graph[f_x][f_y][1] == 1:
             graph[x][y] = [0,0]
             santa_score[num] += D
-            santa_stern[num] += 2
+            santa_stern[num] = 2
             d = (d+2)%4
             # 산타가 범위 밖으로 튕긴다
             santa_splash(f_x,f_y,num,d,D)
 
         else:
-            # print(f_x,f_y,x,y)
+            
             graph[f_x][f_y], graph[x][y] = graph[x][y], graph[f_x][f_y]
 
 def santa_splash(x,y,num,d,length):
@@ -142,9 +141,9 @@ def santa_splash(x,y,num,d,length):
         else:
             graph[new_x][new_y] = [num,2]
 
-def deer_splash(x,y,d,num,length):
+def deer_splash(x,y,direct,num,length):
 
-    new_x, new_y = x + L_dx[d] * length, y + L_dy[d]*length
+    new_x, new_y = x + L_dx[direct] * length, y + L_dy[direct]*length
 
     if not (0 <= new_x < N and 0 <= new_y < N):
             santa_life[num] = False
@@ -153,21 +152,25 @@ def deer_splash(x,y,d,num,length):
         if graph[new_x][new_y][1] == 2:
             tmp = [graph[new_x][new_y][0], graph[new_x][new_y][1]]
             graph[new_x][new_y] = [num, 2]
-            santa_splash(new_x,new_y,tmp[0],d,1)
+            
+            deer_splash(new_x,new_y,direct,tmp[0],1)
+
         else:
             graph[new_x][new_y] = [num,2]
 
-
-
-
-for _ in range(M):
+for z in range(M):
     L_x, L_y = L_move(graph)
-    # print(santa_life, santa_stern)
     
+    # if z >= 6:
+    #     print(santa_stern,santa_life,santa_score)
+    #     print(graph)
+
     for i in range(1, P+1):
         if santa_life[i] == True and santa_stern[i] == 0:
             S_move(i, L_x, L_y)
-    
+    # if z == 5:
+    #     print(santa_stern,santa_life,santa_score)
+    #     print(graph)
     for i in range(1, P+1):
         if santa_life[i] == True:
             santa_score[i] += 1
