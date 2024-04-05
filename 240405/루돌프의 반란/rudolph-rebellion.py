@@ -74,7 +74,7 @@ def L_move(graph):
 
     return check[0], check[1]
 
-def S_move(num,graph,L_x,L_y):
+def S_move(num,L_x,L_y):
     q = deque()
     for i in range(N):
         for j in range(N):
@@ -99,13 +99,17 @@ def S_move(num,graph,L_x,L_y):
         if len(check):
             f_x, f_y, d = check[0][1],check[0][2], check[0][3]
             
-            if graph[check[0][1]][check[0][2]][1] == 2:
-                for i in range(1,len(check)):
-                    if graph[check[i][1]][check[i][2]] != 2:
-                        f_x, f_y,d = check[i][1], check[i][2],check[i][3]
-                        break
-                    else:
-                        f_x, f_y = x,y
+            if graph[f_x][f_y][1] == 2:
+                if len(check) > 1:
+                    for i in range(1,len(check)):
+                        if graph[check[i][1]][check[i][2]] != 2:
+                            f_x, f_y,d = check[i][1], check[i][2],check[i][3]
+                            break
+                        else:
+                            f_x, f_y = x,y
+                else:
+                    f_x, f_y = x,y
+
         else:
             f_x,f_y = x,y
 
@@ -120,9 +124,8 @@ def S_move(num,graph,L_x,L_y):
             santa_splash(f_x,f_y,num,d,D)
 
         else:
+            # print(f_x,f_y,x,y)
             graph[f_x][f_y], graph[x][y] = graph[x][y], graph[f_x][f_y]
-
-
 
 def santa_splash(x,y,num,d,length):
 
@@ -157,14 +160,14 @@ def deer_splash(x,y,d,num,length):
 
 
 
-
 for _ in range(M):
     L_x, L_y = L_move(graph)
-
+    # print(santa_life, santa_stern)
+    
     for i in range(1, P+1):
         if santa_life[i] == True and santa_stern[i] == 0:
-            S_move(i,graph, L_x, L_y)
-
+            S_move(i, L_x, L_y)
+    
     for i in range(1, P+1):
         if santa_life[i] == True:
             santa_score[i] += 1
