@@ -25,16 +25,19 @@ def distance(x1,y1,x2,y2):
     return abs(x1-x2) + abs(y1-y2)
 
 def move(total):
-    global total_move
+    global total_move, p_graph
+    tmp_graph = [[[] for _ in range(N)] for _ in range(N)]
     q = deque()
     for i in range(N):
         for j in range(N):
             if len(p_graph[i][j]):
                 q.append((i,j))
-    
+    # if total == 1:
+    #     print(q)
     while q:
         x,y = q.popleft()
         current_distance = distance(x,y,exit[0],exit[1])
+    
         tmp = []
         for i in range(4):
             nx, ny = x+ dx[i], y + dy[i]
@@ -45,12 +48,24 @@ def move(total):
                     tmp.append([nx,ny])
 
         if len(tmp):
-            p = p_graph[x][y].pop(0)
-            if tmp[0][0] == exit[0] and tmp[0][1] == exit[1]:
-                p_life[p] = False
-            else:
-                p_graph[tmp[0][0]][tmp[0][1]].append(p)
-            total_move += 1
+            while len(p_graph[x][y]):
+                p = p_graph[x][y].pop(0)
+                # if total==1:
+                #         print(p)
+                if tmp[0][0] == exit[0] and tmp[0][1] == exit[1]:
+                    p_life[p] = False
+                else:
+                    tmp_graph[tmp[0][0]][tmp[0][1]].append(p)
+                    
+                total_move += 1
+        
+    for i in range(N):
+        for j in range(N):
+            if len(tmp_graph[i][j]):
+                while len(tmp_graph[i][j]):
+                    p_graph[i][j].append(tmp_graph[i][j].pop(0))
+        # if total == 1:
+        #     print(p_graph)
 
 def find_nemo(z):
     q = deque()
@@ -105,17 +120,22 @@ def rotate(z):
 
 
 for total in range(K):
+
     move(total)
+
     if any(p_life[1:]) == False:
         break
 
-    # if total == 3:
+    # if total == 1:
     #     print(total_move, p_life)
     #     print(graph)
     #     print(p_graph)
 
     rotate(total)
-
+    # if total == 1:
+    #     print(total_move, p_life)
+    #     print(graph)
+    #     print(p_graph)
 
 print(total_move)
 print(exit[0]+1, exit[1]+1)
