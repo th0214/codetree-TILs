@@ -36,53 +36,56 @@ def attack(a,b,now):
     tmp = []
     for i in range(N):
         for j in range(M):
-            if graph[i][j] != 0 and graph[i][j] != graph[a][b] and graph[i][j] >= max_val:
+            if graph[i][j] != 0 and i != a and j != b and graph[i][j] >= max_val:
                     max_val = graph[i][j]
                     tmp.append((i,j, i+j, attack_exper[i][j], graph[i][j]))
     
-    tmp.sort(key=lambda x:(-x[4],x[3],x[2],x[1]))
-    a_x, a_y = tmp[0][0], tmp[0][1]
+    if len(tmp):
+        tmp.sort(key=lambda x:(-x[4],x[3],x[2],x[1]))
+        a_x, a_y = tmp[0][0], tmp[0][1]
 
-    lazer_attack = False
-    route = []
-    route_length = 1e9
-    visited = [[0] * M for _ in range(N)]
-    visited[a][b] = 1
-    while q:
-        x,y,arr = q.popleft()
-        if x == a_x and y == a_y:
-            if route_length > len(arr):
-                route_length = len(arr)
-                route.extend(arr)
+        lazer_attack = False
+        route = []
+        route_length = 1e9
+        visited = [[0] * M for _ in range(N)]
+        visited[a][b] = 1
 
-        for i in range(4):
-            nx, ny = (x + l_x[i]) % N, (y + l_y[i]) % M
+        while q:
+            x,y,arr = q.popleft()
 
-            if 0 <= nx < N and 0 <= ny < M and visited[nx][ny] == 0 and graph[nx][ny] != 0:
-                visited[nx][ny] = 1
-                q.append((nx,ny,arr+[(nx,ny)]))
-    
-
-    if len(route):
-        lazer_attack = True
-    
-    if lazer_attack:
-        for x,y in route:
             if x == a_x and y == a_y:
-                graph[x][y] -= graph[a][b]
-                attack_exper[x][y] = now
-            else:
-                graph[x][y] -= graph[a][b] // 2
-                attack_exper[x][y] = now
-    else:
+                if route_length > len(arr):
+                    route_length = len(arr)
+                    route.extend(arr)
 
-        graph[a_x][a_y] -= graph[a][b]
-        attack_exper[a_x][a_y] = now
-        for i in range(8):
-            nx, ny = (a_x + pok_x[i])%N, (a_y + pok_y[i])%M
-            if graph[nx][ny] > 0:
-                graph[nx][ny] -= graph[a][b] // 2
-                attack_exper[nx][ny] = now
+            for i in range(4):
+                nx, ny = (x + l_x[i]) % N, (y + l_y[i]) % M
+
+                if visited[nx][ny] == 0 and graph[nx][ny] > 0:
+                    visited[nx][ny] = 1
+                    q.append((nx,ny,arr+[(nx,ny)]))
+        
+    
+        if len(route):
+            lazer_attack = True
+        
+        if lazer_attack:
+            for x,y in route:
+                if x == a_x and y == a_y:
+                    graph[x][y] -= graph[a][b]
+                    attack_exper[x][y] = now
+                else:
+                    graph[x][y] -= graph[a][b] // 2
+                    attack_exper[x][y] = now
+        else:
+
+            graph[a_x][a_y] -= graph[a][b]
+            attack_exper[a_x][a_y] = now
+            for i in range(8):
+                nx, ny = (a_x + pok_x[i])%N, (a_y + pok_y[i])%M
+                if graph[nx][ny] > 0:
+                    graph[nx][ny] -= graph[a][b] // 2
+                    attack_exper[nx][ny] = now
 
 def check_zero():
     for i in range(N):
@@ -98,12 +101,27 @@ def cure(now):
 
 
 for now in range(1,K+1):
-    x,y = attacker_c(now)
+    cnt = 0
+
+    for i in range(N):
+        for j in range(M):
+            if graph[i][j] > 0:
+                cnt += 1
     
+    if cnt == 1:
+        break
+
+    x,y = attacker_c(now)
+    if now == 3:
+        print(graph)
     attack(x,y, now)
+    if now == 3:
+        print(graph)
     check_zero()
     cure(now)
-
+    if now == 3:
+        print(graph)
+    
 result = 0
 
 for i in graph:
