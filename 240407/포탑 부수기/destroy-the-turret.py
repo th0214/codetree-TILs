@@ -2,7 +2,7 @@ from collections import deque
 N,M,K = map(int, input().split())
 graph = [list(map(int, input().split())) for _ in range(N)]
 attack_life = [[0] * M for _ in range(N)]
-
+p_pork = [[0] * M for _ in range(N)]
 l_x = [0,1,0,-1]
 l_y = [1,0,-1,0]
 
@@ -68,23 +68,23 @@ def attack(a,b):
     
     if can_lazer:
         graph[at_x][at_y] -= graph[a][b]
-        attack_life[at_x][at_y] = now
+        p_pork[at_x][at_y] = now
 
         for i,j in route:
             graph[i][j] -= (graph[a][b] // 2)
-            attack_life[i][j] = now
+            p_pork[i][j] = now
     
     else:
 
         graph[at_x][at_y] -= graph[a][b]
-        attack_life[at_x][at_y] = now
+        p_pork[at_x][at_y] = now
 
         for i in range(8):
             g_x, g_y = (at_x + p_x[i]) % N, (at_y + p_y[i]) % M
 
             if graph[g_x][g_y] > 0 and (g_x,g_y) != (a,b):
                 graph[g_x][g_y] -= (graph[a][b] // 2)
-                attack_life[g_x][g_y] = now
+                p_pork[g_x][g_y] = now
 
 def check():
     for i in range(N):
@@ -95,7 +95,7 @@ def check():
 def cure(now):
     for i in range(N):
         for j in range(M):
-            if attack_life[i][j] < now and graph[i][j] > 0:
+            if attack_life[i][j] < now and graph[i][j] > 0 and p_pork[i][j] < now:
                 graph[i][j] += 1
 
 def give_up():
