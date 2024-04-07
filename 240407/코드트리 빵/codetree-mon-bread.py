@@ -33,7 +33,7 @@ def move_basecamp(t):
         for i in range(4):
             nx, ny = x + dx[i], y + dy[i]
 
-            if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 1 and h_graph[nx][ny] == False:
+            if 0 <= nx < n and 0 <= ny < n and graph[nx][ny] == 1 and h_graph[nx][ny] == False and d_graph[nx][ny] == False:
                 if (cnt, nx ,ny) in tmp:
                     pass
                 else:
@@ -44,16 +44,16 @@ def move_basecamp(t):
                 q.append((nx,ny,cnt+1))
 
     tmp.sort(key=lambda x:(x[0],x[1],x[2]))
+    # if t == 4:
+    #     print(tmp)
     n_l[time] = [tmp[0][1], tmp[0][2]]
     h_graph[tmp[0][1]][tmp[0][2]] = True
     basecamp[time] = True
 
-def go_conv(time):
+def go_conv():
     num = []
     
     for i in range(1, m+1):
-        if i == time:
-            continue
 
         if basecamp[i] == True and d_graph[p_l[i][0]][p_l[i][1]] == False:
             num.append(i)
@@ -64,7 +64,6 @@ def go_conv(time):
             q = deque()
             q.append((n_l[i][0],n_l[i][1]))
             cur_distance = abs(n_l[i][0]-p_l[i][0]) + abs(n_l[i][1]-p_l[i][1])
-
 
             while q:
                 x,y = q.popleft()
@@ -81,7 +80,7 @@ def go_conv(time):
                                 tmp.append((nx,ny))
                             else:
                                 tmp.append((nx,ny))
-
+            
             n_l[i] = [tmp[0][0],tmp[0][1]]
 
             if (tmp[0][0],tmp[0][1]) == (p_l[i][0],p_l[i][1]):
@@ -97,15 +96,15 @@ while True:
 
     time += 1
 
+    if any(basecamp) == True:
+        go_conv()
+
     if time <= m:
         move_basecamp(time)
-    
-    if any(basecamp) == True:
-        go_conv(time)
-
-    # if time == 7:
-    #     print(d_graph)
-    #     print(p_l)
-    #     print(n_l)
 
 print(time)
+
+# print(time)
+# print(d_graph)
+# print(p_l)
+# print(n_l)
