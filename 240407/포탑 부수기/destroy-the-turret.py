@@ -42,7 +42,6 @@ def attack(a,b,now):
     
     tmp.sort(key=lambda x:(-x[4],x[3],x[2],x[1]))
     a_x, a_y = tmp[0][0], tmp[0][1]
-    attack_exper[a_x][a_y] = now
 
     lazer_attack = False
     route = []
@@ -71,16 +70,19 @@ def attack(a,b,now):
         for x,y in route:
             if x == a_x and y == a_y:
                 graph[x][y] -= graph[a][b]
+                attack_exper[x][y] = now
             else:
                 graph[x][y] -= graph[a][b] // 2
+                attack_exper[x][y] = now
     else:
 
         graph[a_x][a_y] -= graph[a][b]
-
+        attack_exper[a_x][a_y] = now
         for i in range(8):
             nx, ny = (a_x + pok_x[i])%N, (a_y + pok_y[i])%M
             if graph[nx][ny] > 0:
                 graph[nx][ny] -= graph[a][b] // 2
+                attack_exper[nx][ny] = now
 
 def check_zero():
     for i in range(N):
@@ -97,6 +99,7 @@ def cure(now):
 
 for now in range(1,K+1):
     x,y = attacker_c(now)
+    
     attack(x,y, now)
     check_zero()
     cure(now)
