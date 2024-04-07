@@ -83,7 +83,10 @@ def attack(a,b,now):
             attack_exper[a_x][a_y] = now
             for i in range(8):
                 nx, ny = (a_x + pok_x[i])%N, (a_y + pok_y[i])%M
+                print(nx,ny)
+
                 if graph[nx][ny] > 0 and nx != a and ny != b:
+                    
                     graph[nx][ny] -= graph[a][b] // 2
                     attack_exper[nx][ny] = now
 
@@ -112,15 +115,15 @@ for now in range(1,K+1):
         break
 
     x,y = attacker_c(now)
-    # if now == 1:
-    #     print(graph)
+    if now == 1:
+        print(graph)
     attack(x,y, now)
-    # if now == 1:
-    #     print(graph)
+    if now == 1:
+        print(graph)
     check_zero()
     cure(now)
-    # if now == 1:
-    #     print(graph)
+    if now == 1:
+        print(graph)
     
 result = 0
 
