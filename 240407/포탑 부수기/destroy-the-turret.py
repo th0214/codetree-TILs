@@ -112,15 +112,15 @@ for now in range(1,K+1):
         break
 
     x,y = attacker_c(now)
-    if now == 3:
-        print(graph)
+    # if now == 3:
+    #     print(graph)
     attack(x,y, now)
-    if now == 3:
-        print(graph)
+    # if now == 3:
+    #     print(graph)
     check_zero()
     cure(now)
-    if now == 3:
-        print(graph)
+    # if now == 3:
+    #     print(graph)
     
 result = 0
 
