@@ -101,15 +101,15 @@ def cure(now):
 
 
 for now in range(1,K+1):
-    cnt = 0
+    # cnt = 0
 
-    for i in range(N):
-        for j in range(M):
-            if graph[i][j] > 0:
-                cnt += 1
+    # for i in range(N):
+    #     for j in range(M):
+    #         if graph[i][j] > 0:
+    #             cnt += 1
     
-    if cnt == 1:
-        break
+    # if cnt == 1:
+    #     break
 
     x,y = attacker_c(now)
     # if now == 3:
