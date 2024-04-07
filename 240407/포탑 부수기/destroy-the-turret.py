@@ -95,7 +95,7 @@ def check():
 def cure(now):
     for i in range(N):
         for j in range(M):
-            if graph[i][j] < now:
+            if attack_life[i][j] < now and graph[i][j] > 0:
                 graph[i][j] += 1
 
 def give_up():
@@ -107,9 +107,11 @@ def give_up():
     return cnt
 
 for now in range(1,K+1):
-    
+    # print(graph)
     a_x, a_y = choose_attack(now)
+    # print(graph)
     attack(a_x,a_y)
+    # print(graph)
     check()
     cure(now)
 
