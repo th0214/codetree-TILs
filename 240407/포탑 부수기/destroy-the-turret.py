@@ -19,7 +19,7 @@ def choose_attack(now):
                 min_val = graph[i][j]
                 tmp.append((graph[i][j],attack_life[i][j],i+j,i,j))
     
-    tmp.sort(key=lambda x:(x[0],x[1],-x[2],-x[4]))
+    tmp.sort(key=lambda x:(x[0],-x[1],-x[2],-x[4]))
     attack_life[tmp[0][3]][tmp[0][4]] = now
     graph[tmp[0][3]][tmp[0][4]] += (N+M)
 
@@ -111,10 +111,11 @@ for now in range(1,K+1):
     a_x, a_y = choose_attack(now)
     # print(graph)
     attack(a_x,a_y)
-    # print(graph)
+    if now == 76:
+        print(graph)
     check()
     cure(now)
-
+    
     if give_up() == 1:
         break
 
