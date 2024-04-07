@@ -40,7 +40,7 @@ def attack(a,b,now):
                     max_val = graph[i][j]
                     tmp.append((i,j, i+j, attack_exper[i][j], graph[i][j]))
     
-    if len(tmp):
+    
         tmp.sort(key=lambda x:(-x[4],x[3],x[2],x[1]))
         a_x, a_y = tmp[0][0], tmp[0][1]
 
@@ -66,26 +66,26 @@ def attack(a,b,now):
                     q.append((nx,ny,arr+[(nx,ny)]))
         
     
-        if len(route):
-            lazer_attack = True
-        
-        if lazer_attack:
-            for x,y in route:
-                if x == a_x and y == a_y:
-                    graph[x][y] -= graph[a][b]
-                    attack_exper[x][y] = now
-                else:
-                    graph[x][y] -= graph[a][b] // 2
-                    attack_exper[x][y] = now
-        else:
+    if len(route):
+        lazer_attack = True
+    
+    if lazer_attack:
+        for x,y in route:
+            if x == a_x and y == a_y:
+                graph[x][y] -= graph[a][b]
+                attack_exper[x][y] = now
+            else:
+                graph[x][y] -= graph[a][b] // 2
+                attack_exper[x][y] = now
+    else:
 
-            graph[a_x][a_y] -= graph[a][b]
-            attack_exper[a_x][a_y] = now
-            for i in range(8):
-                nx, ny = (a_x + pok_x[i])%N, (a_y + pok_y[i])%M
-                if graph[nx][ny] > 0:
-                    graph[nx][ny] -= graph[a][b] // 2
-                    attack_exper[nx][ny] = now
+        graph[a_x][a_y] -= graph[a][b]
+        attack_exper[a_x][a_y] = now
+        for i in range(8):
+            nx, ny = (a_x + pok_x[i])%N, (a_y + pok_y[i])%M
+            if graph[nx][ny] > 0:
+                graph[nx][ny] -= graph[a][b] // 2
+                attack_exper[nx][ny] = now
 
 def check_zero():
     for i in range(N):
