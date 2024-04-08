@@ -36,8 +36,9 @@ def move_select(idx,x,y):
 def move(idx,x,y):
 
     rx, ry = p_abil[idx][0], p_abil[idx][1]
-    p_graph[x][y] = idx
     p_graph[rx][ry] = -1
+
+    p_graph[x][y] = idx
     p_abil[idx][0], p_abil[idx][1] = x, y
 
 def get_gun(idx,x,y):
@@ -50,7 +51,7 @@ def get_gun(idx,x,y):
         max_gun = max(gun_graph[x][y])
         tmp = p_abil[idx][4]
 
-        if max_gun > p_abil[idx][4]:
+        if max_gun > tmp:
             p_abil[idx][4] = max_gun
             gun_graph[x][y][gun_graph[x][y].index(max(gun_graph[x][y]))] = tmp   
         
@@ -61,14 +62,14 @@ def fight(idx,nx,ny):
     sum2 = p_abil[idx][3] + p_abil[idx][4]
 
     if sum1 > sum2:
-        return compare_num, idx, (sum1-sum2)
+        return compare_num, idx, abs(sum1-sum2)
     elif sum1 < sum2:
-        return idx, compare_num, (sum2-sum1)
+        return idx, compare_num, abs(sum2-sum1)
     else:
         if p_abil[compare_num][3] > p_abil[idx][3]:
-            return compare_num, idx, (sum1-sum2)
+            return compare_num, idx, abs(sum1-sum2)
         elif p_abil[compare_num][3] < p_abil[idx][3]:
-            return idx, compare_num, (sum2-sum1)
+            return idx, compare_num, abs(sum2-sum1)
 
 def drop_gun(idx,x,y):
 
