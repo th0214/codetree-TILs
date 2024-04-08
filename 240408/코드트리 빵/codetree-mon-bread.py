@@ -3,8 +3,8 @@ from collections import deque
 n,m = map(int, input().split())
 
 graph = [list(map(int, input().split())) for _ in range(n)]
-d_graph = [[False] * n for _ in range(n)] # 편의점
-h_graph = [[False] * n for _ in range(n)] # 베이스캠프
+d_graph = [[False] * n for _ in range(n)]
+h_graph = [[False] * n for _ in range(n)]
 
 p_l = [[0]]
 n_l = [[0]]
@@ -54,6 +54,7 @@ def go_conv():
     num = []
     
     for i in range(1, m+1):
+
         if basecamp[i] == True and d_graph[p_l[i][0]][p_l[i][1]] == False:
             num.append(i)
     
@@ -63,7 +64,7 @@ def go_conv():
             q = deque()
             q.append((n_l[i][0],n_l[i][1]))
             # cur_distance = abs(n_l[i][0]-p_l[i][0]) + abs(n_l[i][1]-p_l[i][1])
-
+            cur_distance = 1e9
             while q:
                 x,y = q.popleft()
 
@@ -72,11 +73,14 @@ def go_conv():
 
                     if 0 <= nx < n and 0 <= ny < n and d_graph[nx][ny] == False and h_graph[nx][ny] == False:
                         
-                        # if cur_distance > (abs(nx-p_l[i][0]) + abs(ny-p_l[i][1])):
-                        cur_distance = abs(nx-p_l[i][0]) + abs(ny-p_l[i][1])
-                        tmp.append((cur_distance,nx,ny))
-
-            tmp.sort(key=lambda x:(x[0]))
+                        if cur_distance > ((abs(nx-p_l[i][0]) + abs(ny-p_l[i][1]))):
+                            cur_distance = (abs(nx-p_l[i][0]) + abs(ny-p_l[i][1]))
+                            if len(tmp):
+                                tmp.pop(0)
+                                tmp.append((nx,ny))
+                            else:
+                                tmp.append((nx,ny))
+            
             n_l[i] = [tmp[0][0],tmp[0][1]]
 
             if (tmp[0][0],tmp[0][1]) == (p_l[i][0],p_l[i][1]):
