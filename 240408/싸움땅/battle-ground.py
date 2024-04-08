@@ -80,7 +80,7 @@ def losermove(idx):
     x,y = p_abil[idx][0], p_abil[idx][1]
     nx, ny = x + dx[p_abil[idx][2]], y + dy[p_abil[idx][2]]
 
-    while not (0 <= nx < n and 0 <= ny < n) and p_graph[nx][ny] == -1:
+    while not (0 <= nx < n and 0 <= ny < n) and p_graph[nx][ny] != -1:
         p_abil[idx][2] = (p_abil[idx][2] + 1) % 4
         nx, ny = x + dx[p_abil[idx][2]], y + dy[p_abil[idx][2]]
 
