@@ -21,148 +21,100 @@ for i in range(m):
 dx = [-1,0,1,0]
 dy = [0,1,0,-1]
 
+def move_select(idx,x,y):
 
-def change_gun(idx, x, y):
+    nx, ny = x + dx[p_abil[idx][2]], y + dy[p_abil[idx][2]]
 
-    if len(gun_graph[x][y]) and max(gun_graph[x][y]) > p_abil[idx][4] and p_abil[idx][4] > 0:
+    if 0 <= nx < n and 0 <= ny < n:
+        return nx, ny
+    
+    else:
+        p_abil[idx][2] = (p_abil[idx][2]+2) % 4
+        nx, ny = x + dx[p_abil[idx][2]], y + dy[p_abil[idx][2]]
+        return nx, ny
+    
+def move(idx,x,y):
+
+    rx, ry = p_abil[idx][0], p_abil[idx][1]
+    p_graph[x][y] = idx
+    p_graph[rx][ry] = -1
+    p_abil[idx][0], p_abil[idx][1] = x, y
+
+def get_gun(idx,x,y):
+
+    if p_abil[idx][4] == 0:
+        p_abil[idx][4] = max(gun_graph[x][y])
+        gun_graph[x][y].pop(gun_graph[x][y].index(max(gun_graph[x][y])))
+
+    else:
+        max_gun = max(gun_graph[x][y])
         tmp = p_abil[idx][4]
-        p_abil[idx][4] = max(gun_graph[x][y])
-        gun_graph[x][y].remove(max(gun_graph[x][y]))
-        gun_graph[x][y].append(tmp)
-    
-    elif len(gun_graph[x][y]) and max(gun_graph[x][y]) > p_abil[idx][4] and p_abil[idx][4] == 0:
-        p_abil[idx][4] = max(gun_graph[x][y])
-        gun_graph[x][y].remove(max(gun_graph[x][y]))
 
-def sum1_win(i,c_idx,nx,ny,sum1,sum2,x,y):
-    global p_graph, gun_graph, p_abil
-
-    score[c_idx] += (sum1 - sum2)
-    # 진 사람 총 버리기
-    if p_abil[i][4] > 0:
-        gun_graph[nx][ny].append(p_abil[i][4])
-        p_abil[i][4] = 0
-    
-    # 이긴 사람 총 줍기
-    change_gun(c_idx,nx,ny)
-
-    # 진사람 다른 곳 이동
-    dd = p_abil[i][2]
-    xx, yy = nx + dx[dd], ny + dy[dd]
-
-    while True:
+        if max_gun > p_abil[idx][4]:
+            p_abil[idx][4] = max_gun
+            gun_graph[x][y][gun_graph[x][y].index(max(gun_graph[x][y]))] = tmp   
         
-        if not (0 <= xx < n and 0 <= yy < n) or p_graph[xx][yy] != -1:
-            dd = (p_abil[i][2]+1) % 4
-            xx, yy = nx + dx[dd], ny + dy[dd]
-            
-        if p_graph[xx][yy] == -1:
-            p_abil[i][2] = dd
-            p_abil[i][0], p_abil[i][1] = xx,yy
-            p_graph[x][y], p_graph[xx][yy] = p_graph[xx][yy], p_graph[x][y]
-            break
-        
-        
-    
-    # 진 사람 총줍기
-    change_gun(i,xx,yy)
+def fight(idx,nx,ny):
+    compare_num = p_graph[nx][ny]
 
-def sum2_win(i,c_idx,nx,ny,sum1,sum2,x,y):
-    score[i] += (sum2 - sum1)
-    # 진 사람 총 버리기
-    if p_abil[c_idx][4] > 0:
-        gun_graph[nx][ny].append(p_abil[c_idx][4])
-        p_abil[c_idx][4] = 0
-    
-    # 이긴 사람 총 줍기
-    change_gun(i,nx,ny)
+    sum1 = p_abil[compare_num][3] + p_abil[compare_num][4]
+    sum2 = p_abil[idx][3] + p_abil[idx][4]
 
-    # 진사람 다른 곳 이동
-    dd = p_abil[c_idx][2]
-    xx, yy = nx + dx[dd], ny + dy[dd]
-    p_graph[x][y] = -1
+    if sum1 > sum2:
+        return compare_num, idx, (sum1-sum2)
+    elif sum1 < sum2:
+        return idx, compare_num, (sum2-sum1)
+    else:
+        if p_abil[compare_num][3] > p_abil[idx][3]:
+            return compare_num, idx, (sum1-sum2)
+        elif p_abil[compare_num][3] < p_abil[idx][3]:
+            return idx, compare_num, (sum2-sum1)
 
-    while True:
+def drop_gun(idx,x,y):
 
-        if not (0 <= xx < n and 0 <= yy < n) or p_graph[xx][yy] != -1:
-            dd = (p_abil[c_idx][2]+1) % 4
-            xx, yy = nx + dx[dd], ny + dy[dd]
-        
-        if p_graph[xx][yy] == -1:
-            p_abil[c_idx][2] = dd
-            p_abil[c_idx][0], p_abil[c_idx][1] = xx,yy
-            p_graph[nx][ny],p_graph[xx][yy] = p_graph[xx][yy], p_graph[nx][ny]
-            p_graph[nx][ny] = i
-            p_abil[i][0], p_abil[i][1] = nx, ny
-            break
-        
-        
-        
-    # 진 사람 총줍기
-    change_gun(c_idx,xx,yy)
+    gun_graph[x][y].append(p_abil[idx][4])
+    p_abil[idx][4] = 0
 
+def losermove(idx):
+    x,y = p_abil[idx][0], p_abil[idx][1]
+    nx, ny = x + dx[p_abil[idx][2]], y + dy[p_abil[idx][2]]
 
-def move():
-    global dd
+    while not (0 <= nx < n and 0 <= ny < n) and p_graph[nx][ny] == -1:
+        p_abil[idx][2] = (p_abil[idx][2] + 1) % 4
+        nx, ny = x + dx[p_abil[idx][2]], y + dy[p_abil[idx][2]]
+
+    return nx,ny
+
+def simul():
+
     for i in range(m):
         x,y = p_abil[i][0], p_abil[i][1]
 
-        nx, ny = x + dx[p_abil[i][2]], y + dy[p_abil[i][2]]
-
-        if 0 <= nx < n and 0 <= ny < n:
-            if p_graph[nx][ny] == -1:
-                p_graph[x][y], p_graph[nx][ny] = p_graph[nx][ny], p_graph[x][y]
-                p_abil[i][0], p_abil[i][1] = nx, ny
-                change_gun(i, nx, ny)
-
+        nx,ny = move_select(i,x,y)
+        if p_graph[nx][ny] == -1:
+            if len(gun_graph[nx][ny]) == 0:
+                move(i, nx,ny)
             else:
-                c_idx = p_graph[nx][ny]
-
-                sum1 = p_abil[c_idx][3] + p_abil[c_idx][4]
-                sum2 = p_abil[i][3] + p_abil[i][4]
-
-                if sum1 > sum2:
-                    sum1_win(i,c_idx,nx,ny,sum1,sum2,x,y)
-                    
-                elif sum1 < sum2:
-                    sum2_win(i,c_idx,nx,ny,sum1,sum2,x,y)
-                
-                elif sum1 == sum2:
-                    if p_abil[c_idx][3] > p_abil[i][3]:
-                        sum1_win(i,c_idx,nx,ny,sum1,sum2,x,y)
-                    elif p_abil[c_idx][3] < p_abil[i][3]:
-                        sum2_win(i,c_idx,nx,ny,sum1,sum2,x,y)
-
+                get_gun(i, nx,ny)
+                move(i, nx,ny)
         else:
-            dd = (p_abil[i][2] + 2) % 4
-            p_abil[i][2] = dd
-            nx, ny = x + dx[dd], y + dy[dd]
+            win_idx, lose_idx, diff_num = fight(i,nx,ny)
+            score[win_idx] += diff_num
+            move(i,nx,ny)
+            # 진 사람
+            drop_gun(lose_idx, nx,ny)
+            lx, ly = losermove(lose_idx)
+            move(lose_idx,lx,ly)
+            if len(gun_graph[lx][ly]) != 0:
+                get_gun(lose_idx,lx,ly)
 
-            if p_graph[nx][ny] == -1:
-                p_graph[x][y], p_graph[nx][ny] = p_graph[nx][ny], p_graph[x][y]
-                p_abil[i][0], p_abil[i][1] = nx, ny
-                change_gun(i, nx, ny)
-
-            else:
-                c_idx = p_graph[nx][ny]
-
-                sum1 = p_abil[c_idx][3] + p_abil[c_idx][4]
-                sum2 = p_abil[i][3] + p_abil[i][4]
-
-                if sum1 > sum2:
-                    sum1_win(i,c_idx,nx,ny,sum1,sum2,x,y)
-                    
-                elif sum1 < sum2:
-                    sum2_win(i,c_idx,nx,ny,sum1,sum2,x,y)
-                
-                elif sum1 == sum2:
-                    if p_abil[c_idx][3] > p_abil[i][3]:
-                        sum1_win(i,c_idx,nx,ny,sum1,sum2,x,y)
-                    elif p_abil[c_idx][3] < p_abil[i][3]:
-                        sum2_win(i,c_idx,nx,ny,sum1,sum2,x,y)
+            # 이긴 사람
+            get_gun(win_idx,nx,ny)
+            p_graph[nx][ny] = win_idx
+    
 
 for _ in range(k):
-    move()
+    simul()
 
 # print(p_graph)
 # print(gun_graph)
