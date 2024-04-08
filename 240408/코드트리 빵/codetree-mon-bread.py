@@ -62,30 +62,34 @@ def go_conv():
         for i in num:
             tmp = []
             q = deque()
-            q.append((n_l[i][0],n_l[i][1]))
-            # cur_distance = abs(n_l[i][0]-p_l[i][0]) + abs(n_l[i][1]-p_l[i][1])
-            cur_distance = 1e9
+            q.append((n_l[i][0],n_l[i][1],0,-1))
+            visited = [[0] * n for _ in range(n)]
+            visited[n_l[i][0]][n_l[i][1]] = 1
+            
             while q:
-                x,y = q.popleft()
+                x,y,cnt,direction = q.popleft()
+
+                if x == p_l[i][0] and y == p_l[i][1]:
+                    tmp.append((cnt,n_l[i][0],n_l[i][1],direction))
 
                 for j in range(4):
                     nx, ny = x + dx[j], y + dy[j]
 
-                    if 0 <= nx < n and 0 <= ny < n and d_graph[nx][ny] == False and h_graph[nx][ny] == False:
+                    if 0 <= nx < n and 0 <= ny < n and d_graph[nx][ny] == False and h_graph[nx][ny] == False and visited[nx][ny] == 0:
+                        visited[nx][ny] = 1
+                        if cnt == 0:
+                            q.append((nx,ny,cnt+1,j))
+                        else:
+                            q.append((nx,ny,cnt+1,direction)) 
                         
-                        if cur_distance > ((abs(nx-p_l[i][0]) + abs(ny-p_l[i][1]))):
-                            cur_distance = (abs(nx-p_l[i][0]) + abs(ny-p_l[i][1]))
-                            if len(tmp):
-                                tmp.pop(0)
-                                tmp.append((nx,ny))
-                            else:
-                                tmp.append((nx,ny))
-            
-            n_l[i] = [tmp[0][0],tmp[0][1]]
+            tmp.sort(key=lambda x:x[0])
+            f_x, f_y = tmp[0][1] + dx[tmp[0][3]], tmp[0][2] + dy[tmp[0][3]]
 
-            if (tmp[0][0],tmp[0][1]) == (p_l[i][0],p_l[i][1]):
+            n_l[i] = [f_x,f_y]
+
+            if (f_x,f_y) == (p_l[i][0],p_l[i][1]):
                 arrive[i] = False
-                d_graph[tmp[0][0]][tmp[0][1]] = True
+                d_graph[f_x][f_y] = True
 
 
 time = 0
@@ -102,9 +106,10 @@ while True:
     if time <= m:
         move_basecamp(time)
 
-print(time)
-
-# print(time)
 # print(d_graph)
 # print(p_l)
 # print(n_l)
+
+print(time)
+
+# print(time)
