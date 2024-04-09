@@ -4,7 +4,7 @@ from collections import deque
 N, M, K = map(int, input().split())
 
 graph = [list(map(int,input().split())) for _ in range(N)]
-graph_idx = [[0] * (N) for _ in range(N)]
+graph_idx = [[-1] * (N) for _ in range(N)]
 
 v = [[] for _ in range(M)]
 tail = [0] * M
@@ -32,7 +32,7 @@ def dfs(x,y,idx):
 
         v[idx].append((nx,ny))
         if graph[nx][ny] == 3:
-            tail[idx] = len(v[idx])-1
+            tail[idx] = len(v[idx])
         dfs(nx,ny,idx) 
 
 
@@ -60,9 +60,9 @@ def move():
         for j, (x,y) in enumerate(v[i]):
             if j == 0:
                 graph[x][y] = 1
-            elif j < tail[i]:
+            elif j < tail[i]-1:
                 graph[x][y] = 2
-            elif j == tail[i]:
+            elif j == tail[i]-1:
                 graph[x][y] = 3
             else:
                 graph[x][y] = 4
@@ -74,31 +74,31 @@ def throw(turn):
         for i in range(N):
             if 1<= graph[turn-1][i] <= 3:
                 get_score(turn-1, i)
-                return turn-1,i
+                return graph_idx[turn-1][i]
     
     if N+1 <= turn <= 2*N:
         turn -= N
         for i in range(N):
             if 1<= graph[N-1-i][turn-1] <= 3:
                 get_score(i,turn-1)
-                return i,turn-1
+                return graph_idx[i][turn-1]
     
     if (2*N+1) <= turn <= (3*N):
         turn -= 2*N
         for i in range(N):
             if 1 <= graph[N-turn][N-i-1] <= 3:
                 get_score(N-turn,N-i-1)
-                return N-turn,N-i-1
+                return graph_idx[N-turn][N-i-1]
     
     if (3*N+1) <= turn <= (4*N):
         turn -= 3*N
         for i in range(N):
             if 1 <= graph[i][N-turn] <= 3:
                 get_score(i,N-turn)
-                return i,N-turn
+                return graph_idx[i][N-turn]
 
     else:
-        return False,False
+        return -1
 
 def get_score(x,y):
     global answer
@@ -107,37 +107,44 @@ def get_score(x,y):
     value = v[idx].index((x,y))
     answer += (value+1) * (value+1)
 
-def reverse(x,y):
-    
-    if x == False and y == False:
+def reverse(idx):
+
+    if idx == -1:
         return
     
-    idx = graph_idx[x][y]
-    value = v[idx].index((x,y))
-    
     new_v = []
-    tmp1 = v[idx][:value+1][::-1]
-    tmp2 = v[idx][value+1:][::-1]
 
-    new_v.extend(tmp1+tmp2)
-    v[idx] = new_v
+    for j in range(tail[idx] - 1, -1, -1):
+        new_v.append(v[idx][j])
 
-    for j, (x,y) in enumerate(v[idx]):
+    for j in range(len(v[idx]) - 1, tail[idx] - 1, -1):
+        new_v.append(v[idx][j])
+
+    v[idx] = new_v[:]
+
+    # 벡터에 저장한 정보를 바탕으로 보드의 표기 역시 바꿔줍니다.
+    for j, (x, y) in enumerate(v[idx]):
         if j == 0:
             graph[x][y] = 1
-        elif j < tail[idx]:
+        elif j < tail[idx] - 1:
             graph[x][y] = 2
-        elif j == tail[idx]:
+        elif j == tail[idx] - 1:
             graph[x][y] = 3
         else:
             graph[x][y] = 4
+    
 
 init()
 for i in range(1,K+1):
     move()
+    # if i == 4:
+    #     print(graph)
+    #     print(v)
+    idx = throw(i)
 
-    x,y = throw(i)
-
-    reverse(x,y)
+    reverse(idx)
+    # if i == 4:
+    #     print(graph)
+    #     print(v)
 
 print(answer)
