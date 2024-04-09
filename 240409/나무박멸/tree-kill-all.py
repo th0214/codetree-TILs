@@ -100,18 +100,18 @@ def kill(x,y):
 
     answer += graph[x][y]
     graph[x][y] = 0
-    k_graph[x][y] = C+1
+    k_graph[x][y] = C
 
     for i in range(4):
         for j in range(1,K+1):
             nx, ny = x + dx[i] * j, y + dy[i] * j
             if 0 <= nx < N and 0 <= ny < N:
                 if graph[nx][ny] == -1 or graph[nx][ny] == 0:
-                    k_graph[nx][ny] = C+1
+                    k_graph[nx][ny] = C
                     break
                 else:
                     answer += graph[nx][ny]
-                    k_graph[nx][ny] = C+1
+                    k_graph[nx][ny] = C
                     graph[nx][ny] = 0
 
 
@@ -120,7 +120,7 @@ def remove_killer():
         for j in range(N):
             if k_graph[i][j] > 0:
                 k_graph[i][j] -= 1
-                
+
 for _ in range(M):
     tree_grow()
     bunsik()
