@@ -34,33 +34,34 @@ def t_move(k):
     tmp_graph = [[[] for _ in range(n)] for _ in range(n)]
     for i in range(n):
         for j in range(n):
-            if len(p_graph[i][j]) and is_avail(i,j,s_x,s_y) <= 3:
+            if len(p_graph[i][j]) and is_avail(i,j,s_l[0],s_l[1]) <= 3:
                 tmp.append([i,j])
 
-    for x,y in tmp:
-        
-        while len(p_graph[x][y]):
-            d = p_graph[x][y].pop()
+    if len(tmp):
+        for x,y in tmp:
+            
+            while len(p_graph[x][y]):
+                d = p_graph[x][y].pop()
 
-            nx, ny = x + dx[d], y + dy[d]
-
-            if 0 <= nx < n and 0 <= ny < n:
-                if (nx,ny) != (s_l[0],s_l[1]):
-                    tmp_graph[nx][ny].append(d)
-                else:
-                    tmp_graph[x][y].append(d)
-            else:
-                d = (d+2) % 4
                 nx, ny = x + dx[d], y + dy[d]
-                if (nx,ny) != (s_l[0],s_l[1]):
-                    tmp_graph[nx][ny].append(d)
-                else:
-                    tmp_graph[x][y].append(d)
 
-    for i in range(n):
-        for j in range(n):
-            if len(p_graph[i][j]) or len(tmp_graph[i][j]):
-                p_graph[i][j] = tmp_graph[i][j]
+                if 0 <= nx < n and 0 <= ny < n:
+                    if (nx,ny) != (s_l[0],s_l[1]):
+                        tmp_graph[nx][ny].append(d)
+                    else:
+                        tmp_graph[x][y].append(d)
+                else:
+                    d = (d+2) % 4
+                    nx, ny = x + dx[d], y + dy[d]
+                    if (nx,ny) != (s_l[0],s_l[1]):
+                        tmp_graph[nx][ny].append(d)
+                    else:
+                        tmp_graph[x][y].append(d)
+
+        for i in range(n):
+            for j in range(n):
+                if len(p_graph[i][j]) or len(tmp_graph[i][j]):
+                    p_graph[i][j] = tmp_graph[i][j]
 
 
 def initialize_seeker_path():
@@ -129,14 +130,14 @@ def seeker(direction, time):
 initialize_seeker_path()
 
 for t in range(k):
-    # if t == 1:
+    # if t == 5:
     #     print(p_graph)
     #     print(graph)
     #     print(s_l)
     t_move(t)
     direction = s_move()
     seeker(direction, (t+1))
-    # if t == 1:
+    # if t == 5:
     #     print(p_graph)
     #     print(s_l)
 print(result)
