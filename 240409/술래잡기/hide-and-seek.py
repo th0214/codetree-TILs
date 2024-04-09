@@ -29,7 +29,7 @@ for _ in range(h):
 def is_avail(x1,y1,x2,y2):
     return abs(x1-x2) + abs(y1-y2)
 
-def t_move():
+def t_move(k):
     tmp = []
     tmp_graph = [[[] for _ in range(n)] for _ in range(n)]
     for i in range(n):
@@ -45,14 +45,14 @@ def t_move():
             nx, ny = x + dx[d], y + dy[d]
 
             if 0 <= nx < n and 0 <= ny < n:
-                if (nx,ny) != (s_x,s_y):
+                if (nx,ny) != (s_l[0],s_l[1]):
                     tmp_graph[nx][ny].append(d)
                 else:
                     tmp_graph[x][y].append(d)
             else:
                 d = (d+2) % 4
                 nx, ny = x + dx[d], y + dy[d]
-                if (nx,ny) != (s_x,s_y):
+                if (nx,ny) != (s_l[0],s_l[1]):
                     tmp_graph[nx][ny].append(d)
                 else:
                     tmp_graph[x][y].append(d)
@@ -129,12 +129,14 @@ def seeker(direction, time):
 initialize_seeker_path()
 
 for t in range(k):
-    # print(p_graph)
-    # print(graph)
-    # print(s_l)
-    t_move()
+    # if t == 1:
+    #     print(p_graph)
+    #     print(graph)
+    #     print(s_l)
+    t_move(t)
     direction = s_move()
     seeker(direction, (t+1))
-    # print(p_graph)
-    # print(s_l)
+    # if t == 1:
+    #     print(p_graph)
+    #     print(s_l)
 print(result)
