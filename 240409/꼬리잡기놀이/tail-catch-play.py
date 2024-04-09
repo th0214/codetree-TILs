@@ -122,6 +122,16 @@ def reverse(x,y):
     new_v.extend(tmp1+tmp2)
     v[idx] = new_v
 
+    for j, (x,y) in enumerate(v[idx]):
+        if j == 0:
+            graph[x][y] = 1
+        elif j < tail[idx]:
+            graph[x][y] = 2
+        elif j == tail[idx]:
+            graph[x][y] = 3
+        else:
+            graph[x][y] = 4
+
 init()
 for i in range(1,K+1):
     move()
