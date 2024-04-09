@@ -14,31 +14,15 @@ group = [[0] * n for _ in range(n)]
 group_cnt = {}
 visited = [[False] * n for _ in range(n)]
 
-
-# (x, y) 위치에서 DFS를 진행합니다.
-def dfs(x, y):
-    for i in range(4):
-        nx, ny = x + dx[i], y + dy[i]
-        # 인접한 칸 중 숫자가 동일하면서 방문한 적이 없는 칸으로만 이동이 가능합니다.
-        if 0 <= nx < n and 0 <= ny < n and not visited[nx][ny] and graph[nx][ny] == graph[x][y]:
-            visited[nx][ny] = True
-            group[nx][ny] = group_n
-            group_cnt[group_n] += 1
-            dfs(nx, ny)
-
-
-# 그룹을 만들어줍니다.
 def find_group(t):
-    global group_n
-
+    global group_n, visited
+    
     group_n = 0
+    
+    visited = [[False] * n for _ in range(n)]
 
-    # visited 값을 초기화 해줍니다.
-    for i in range(n):
-        for j in range(n):
-            visited[i][j] = False
+    q = deque()
 
-    # DFS를 이용하여 그룹 묶는 작업을 진행합니다.
     for i in range(n):
         for j in range(n):
             if not visited[i][j]:
@@ -46,8 +30,17 @@ def find_group(t):
                 visited[i][j] = True
                 group[i][j] = group_n
                 group_cnt[group_n] = 1
-                dfs(i, j)
+                q.append((i,j))
 
+                while q:
+                    a,b = q.popleft()
+                    for k in range(4):
+                        nx, ny = a + dx[k], b + dy[k]
+                        if 0 <= nx < n and 0 <= ny < n and not visited[nx][ny] and graph[nx][ny] == graph[a][b]:
+                            visited[nx][ny] = True
+                            group[nx][ny] = group_n
+                            group_cnt[group_n] += 1
+                            q.append((nx,ny))
 
 def calculate():
     result = 0
@@ -72,11 +65,11 @@ def rotate(n1,n2,z1,z2):
             ox, oy = i-z1, j-z2
             fx, fy = oy, (n//2) - ox - 1
             tmp[fx+z1][fy+z2] = graph[i][j]
-
-    # print(tmp)      
+ 
     for i in range(z1,n1):
         for j in range(z2,n2):
             graph[i][j] = tmp[i][j]
+
 
 def cross_rotate():
     tmp = [[0] * n for _ in range(n)]
@@ -105,10 +98,6 @@ def total_rotate():
     rotate(n,half_y,half_x+1,0)
     rotate(n,n,half_x+1,half_y+1)
     
-
-
-
-
 for t in range(4):
 
     find_group(t)
