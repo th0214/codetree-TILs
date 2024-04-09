@@ -47,11 +47,15 @@ def t_move():
             if 0 <= nx < n and 0 <= ny < n:
                 if (nx,ny) != (s_x,s_y):
                     tmp_graph[nx][ny].append(d)
+                else:
+                    tmp_graph[x][y].append(d)
             else:
                 d = (d+2) % 4
                 nx, ny = x + dx[d], y + dy[d]
                 if (nx,ny) != (s_x,s_y):
                     tmp_graph[nx][ny].append(d)
+                else:
+                    tmp_graph[x][y].append(d)
 
     for i in range(n):
         for j in range(n):
@@ -122,17 +126,15 @@ def seeker(direction, time):
             result += (time * len(p_graph[nx][ny]))
             p_graph[nx][ny] = []
 
-    
-
 initialize_seeker_path()
 
 for t in range(k):
-    # print(graph)
     # print(p_graph)
+    # print(graph)
+    # print(s_l)
     t_move()
     direction = s_move()
-    # print(graph)
-    # print(p_graph)
     seeker(direction, (t+1))
-
+    # print(p_graph)
+    # print(s_l)
 print(result)
