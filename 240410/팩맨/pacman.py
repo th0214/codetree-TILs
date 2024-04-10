@@ -38,24 +38,20 @@ def m_move():
     for x,y in tmp:
 
         while len(graph[x][y][0]):
-            d = graph[x][y][0].pop(0)
-            tmp_d = d
-            nx, ny = x + m_dx[d], y + m_dy[d]
- 
-            for i in range(7):
-                if 0 <= nx < 4 and 0 <= ny < 4:
-                    if die_graph[nx][ny] == 0 and (nx,ny) != (p_l[0],p_l[1]):
-                        tmp_graph[nx][ny].append(d)
-                        break
-
-                if not (0 <= nx < 4 and 0 <= ny < 4) or die_graph[nx][ny] != 0 or (nx,ny) == (p_l[0],p_l[1]):
-                    d = (d+1) % 8
-                    nx,ny = x + m_dx[d], y + m_dy[d]
-                    
-                if i == 6:
-                    tmp_graph[x][y].append(tmp_d)
+            nd = graph[x][y][0].pop()
+            flag = False
+            for _ in range(8):
+                nx = x + m_dx[nd]
+                ny = y + m_dy[nd]
+                if 0 <= nx < 4 and 0 <= ny < 4 and die_graph[nx][ny] == 0 and not(nx == p_l[0] and ny == p_l[1]):
+                    tmp_graph[nx][ny].append(nd)
+                    flag = True
                     break
-    
+                
+                nd = (nd+1) % 8
+            if flag == False:
+                tmp_graph[x][y].append(nd)
+
     for i in range(4):
         for j in range(4):
             if len(tmp_graph[i][j]):
