@@ -153,7 +153,11 @@ for time in range(M):
     # if time == 3:
     #     print(graph)
     #     print(l_l)
+    if any(santa_life) == False:
+        break
     plus_one()
     stun_minus()
+
+
 
 print(' '.join(map(str,santa_score[1:])))
