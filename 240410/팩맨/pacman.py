@@ -28,7 +28,7 @@ def copy():
 
 def m_move():
     tmp = []
-    tmp_graph = [[[] for _ in range(4)] for _ in range(4)]
+    tmp_graph = []
 
     for i in range(4):
         for j in range(4):
@@ -44,20 +44,15 @@ def m_move():
                 nx = x + m_dx[nd]
                 ny = y + m_dy[nd]
                 if 0 <= nx < 4 and 0 <= ny < 4 and die_graph[nx][ny] == 0 and not(nx == p_l[0] and ny == p_l[1]):
-                    tmp_graph[nx][ny].append(nd)
+                    tmp_graph.append((nx,ny,nd))
                     flag = True
                     break
                 
                 nd = (nd+1) % 8
             if flag == False:
-                tmp_graph[x][y].append(nd)
+                tmp_graph.append((x,y,nd))
 
-    for i in range(4):
-        for j in range(4):
-            if len(tmp_graph[i][j]):
-                while len(tmp_graph[i][j]):
-                    graph[i][j][0].append(tmp_graph[i][j].pop(0))
-
+    return tmp_graph
 
 
 def p_move(x,y,cnt,arr,catch):
@@ -108,9 +103,10 @@ for t in range(T):
     copy()
     # if t == 1:
     #     print(graph)
-    m_move()
-    # if t == 1:
-    #     print(graph)
+    tmp = m_move()
+    
+    for r,c,dir in tmp:
+        graph[r][c][0].append(dir)
 
     visited = [[0] * 4 for _ in range(4)]
     route = []
