@@ -90,7 +90,7 @@ def eat(route):
     for x,y in route:
         if len(graph[x][y][0]):
             graph[x][y][0] = []
-            die_graph[x][y] = 2
+            die_graph[x][y] = 3
     
     p_l = [route[-1][0], route[-1][1]]
 
