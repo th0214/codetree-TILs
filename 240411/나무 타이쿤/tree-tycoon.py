@@ -16,7 +16,7 @@ for _ in range(m):
     tmp_drug = []
     # 약 이동 후 높이 증가
     for x,y in drug:
-        nx, ny = (x + dx[d-1] * p) % 8, (y + dy[d-1] * p) % 8
+        nx, ny = (x + dx[d-1] * p) % n, (y + dy[d-1] * p) % n
         graph[nx][ny] += 1
         tmp_drug.append([nx,ny])
 
