@@ -14,7 +14,6 @@ answer = 0
 def move(x,y,direction):
     global answer
 
-    tmp = [[0] * n for _ in range(n)]
     out_sand = 0
     total_sand = 0
 
@@ -23,10 +22,10 @@ def move(x,y,direction):
 
         if 0 <= nx < n and 0 <= ny < n:
             if idx == 0:
-                tmp[nx][ny] = (graph[x][y] - total_sand)
+                graph[nx][ny] += (graph[x][y] - total_sand)
                 break
             total_sand += int(graph[x][y] * idx)
-            tmp[nx][ny] = int(graph[x][y] * idx)
+            graph[nx][ny] += int(graph[x][y] * idx)
 
         elif not (0 <= nx < n and 0 <= ny < n):
             if idx == 0:
@@ -35,9 +34,6 @@ def move(x,y,direction):
             total_sand += int(graph[x][y] * idx)
             out_sand += int(graph[x][y] * idx)
 
-    for i in range(n):
-        for j in range(n):
-            graph[i][j] += tmp[i][j]
     graph[x][y] = 0
     answer += out_sand
 
@@ -47,8 +43,6 @@ def curve_move():
     direction = 0
     num = 1
     x,y = n//2, n//2
-    # nx, ny = x + dx[direction], y + dy[direction]
-    # move(nx,ny,direction)
 
     while True:
 
