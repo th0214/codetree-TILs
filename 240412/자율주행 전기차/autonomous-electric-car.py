@@ -19,7 +19,7 @@ for i in range(1, M+1):
 def find_person():
     global C, c_l
     tmp = []
-
+    check = True
     visited = [[-1] * N for _ in range(N)]
     q = deque()
     q.append((c_l[0],c_l[1]))
@@ -37,6 +37,8 @@ def find_person():
     for idx in range(1,len(p_l)):
         if p_life[idx] == True:
             x,y,a,b = p_l[idx]
+            if visited[x][y] == -1:
+                return False
             tmp.append((visited[x][y], x,y,idx))
     
     tmp.sort(key=lambda x:(x[0],x[1],x[2]))
