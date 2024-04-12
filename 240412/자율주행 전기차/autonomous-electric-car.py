@@ -1,102 +1,95 @@
 from collections import deque
 
-N, M, gas = map(int, input().split())
+N, M, C = map(int, input().split())
 
 graph = [list(map(int, input().split())) for _ in range(N)]
-t_x,t_y = map(int, input().split())
-tt_x,tt_y = t_x-1,t_y-1
-people = [list(map(int, input().split())) for _ in range(M)]
 
+c_x, c_y = map(int, input().split())
+c_l = [c_x-1, c_y-1]
+
+p_l = [[0]]
+p_life = [True] * (M+1)
 dx = [-1,0,1,0]
 dy = [0,1,0,-1]
 
-def check_distance(x,y):
-    q = deque()
-    q.append((x, y))
-    visited = [[-1 for _ in range(N)] for _ in range(N)]
-    visited[x][y] = 0
+for i in range(1, M+1):
+    x,y,a,b = map(int, input().split())
+    p_l.append([x-1,y-1,a-1,b-1])
 
-    while q:
-        x,y = q.popleft()
-        for k in range(4):
-            nx,ny = x + dx[k], y + dy[k]
-
-            if 0 <= nx < N and 0 <= ny < N and visited[nx][ny] == -1:
-                if graph[nx][ny] == 0:
-                    visited[nx][ny] = visited[x][y] + 1
-                    q.append((nx,ny))
-
-    return visited
-
-def check_people(visit):
+def find_person():
+    global C, c_l
     tmp = []
-    for i in range(len(people)):
-        p_x, p_y, d_x, d_y = people[i]
-        if visit[p_x-1][p_y-1] >= 0:
-            tmp.append([visit[p_x-1][p_y-1],p_x-1,p_y-1,d_x-1,d_y-1,i])
-        else:
-            return -1
 
-    tmp.sort(key=lambda x: (x[0],x[1],x[2]))
-
-    people.remove(people[tmp[0][5]])
-
-    return tmp
-
-def go(pep):
-    global gas
-    check = False
-    cost, p_x, p_y, d_x, d_y, _ = pep[0]
-    gas -= cost
-
-    if gas < 0:
-        check = True
-        return check, d_x, d_y
-    else:
-        result = check_destination(p_x,p_y,d_x,d_y)
-
-        gas -= result
-
-        if gas < 0:
-            check = True
-            return check, d_x, d_y
-        else:
-            gas += result *2
-
-    return check, d_x,d_y
-
-
-def check_destination(p_x,p_y,d_x,d_y):
     visited = [[-1] * N for _ in range(N)]
     q = deque()
-    q.append((p_x,p_y))
-    visited[p_x][p_y] = 0
-
+    q.append((c_l[0],c_l[1]))
+    visited[c_l[0]][c_l[1]] = 0
     while q:
-        x, y = q.popleft()
+        x,y = q.popleft()
+
         for i in range(4):
             nx, ny = x + dx[i], y + dy[i]
 
-            if 0 <= nx < N and 0 <= ny < N and visited[nx][ny] == -1:
-                if graph[nx][ny] == 0:
-                    visited[nx][ny] = visited[x][y] + 1
-                    q.append((nx,ny))
+            if 0 <= nx < N and 0 <= ny < N and graph[nx][ny] == 0 and visited[nx][ny] == -1:
+                visited[nx][ny] = visited[x][y] + 1
+                q.append((nx,ny))
 
-    return visited[d_x][d_y]
+    for idx in range(1,len(p_l)):
+        if p_life[idx] == True:
+            x,y,a,b = p_l[idx]
+            tmp.append((visited[x][y], x,y,idx))
+    
+    tmp.sort(key=lambda x:(x[0],x[1],x[2]))
+    c_l = [tmp[0][1],tmp[0][2]]
+    C -= tmp[0][0]
+    if C <= 0:
+        return False
+    else:
+        return tmp[0][3]
 
-while people:
 
-    visit = check_distance(tt_x,tt_y)
-    pep = check_people(visit)
-    if pep == -1:
-        gas = -1
+def go_destination(idx):
+    global c_l, C
+
+    visited = [[-1] * N for _ in range(N)]
+    q = deque()
+    q.append((c_l[0],c_l[1]))
+    visited[c_l[0]][c_l[1]] = 1
+    while q:
+        x,y = q.popleft()
+
+        for i in range(4):
+            nx, ny = x + dx[i], y + dy[i]
+
+            if 0 <= nx < N and 0 <= ny < N and graph[nx][ny] == 0 and visited[nx][ny] == -1:
+                visited[nx][ny] = visited[x][y] + 1
+                q.append((nx,ny))
+
+    if visited[p_l[idx][2]][p_l[idx][3]] == -1:
+        return False
+    else:
+        if C - (visited[p_l[idx][2]][p_l[idx][3]]-1) >= 0:
+            C += (visited[p_l[idx][2]][p_l[idx][3]]-1)
+            p_life[idx] = False
+            c_l = [p_l[idx][2],p_l[idx][3]]
+        else:
+            return False
+    
+    return True
+
+
+
+while True:
+    result = find_person()
+    if result == False:
+        print(-1)
+        break
+    result1 = go_destination(result)
+
+    if result1 == False:
+        print(-1)
         break
 
-    check,tt_x,tt_y = go(pep)
-
-    if check == True:
-        gas = -1
+    if any(p_life[1:]) == False:
+        print(C)
         break
-
-
-print(gas)
