@@ -55,6 +55,8 @@ def combine(graph):
                 elif cross == False and updown == True:
                     for l in updown_d:
                         tmp[i][j].append([t_m//5,t_s//length,l])
+            elif len(graph[i][j]) == 1:
+                tmp[i][j] = graph[i][j]
 
     return tmp
 
