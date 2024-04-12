@@ -1,113 +1,78 @@
-import copy
+N,M,k = map(int, input().split())
 
-n, m, K = map(int ,input().split())
+board = [list(map(int, input().split())) for _ in range(N)]
 
-graph = [list(map(int, input().split())) for _ in range(n)]
-k_graph = [[[0,0] for _ in range(n)] for _ in range(n)]
+directions = list(map(int, input().split()))
 
-for i in range(n):
-    for j in range(n):
-        if graph[i][j] > 0 :
-            k_graph[i][j][0] = graph[i][j]
-            k_graph[i][j][1] = K
+prior = []
+for i in range(M):
+    temp = []
+    for _ in range(4):
+        temp.append(list(map(int, input().split())))
+    prior.append(temp)
 
 dx = [-1,1,0,0]
 dy = [0,0,-1,1]
-life = [True] * (m+1)
 
-all_l = [0] + list(map(int, input().split()))
-for i in range(len(all_l)):
-    all_l[i] = all_l[i] - 1
+smell = [[[0,0] for _ in range(N)] for _ in range(N)]
 
-dic = dict()
+def update_smell():
+    for i in range(N):
+        for j in range(N):
+            if smell[i][j][1] > 0:
+                smell[i][j][1] -= 1
 
-people = 1
-cnt = 0
-for i in range(m*4):
-    cnt += 1
+            if board[i][j] != 0:
+                smell[i][j] = [board[i][j], k]
 
-    x1,x2,x3,x4 = map(int ,input().split())
-
-    if i >= 4:
-        dic[(people,i%4)] = [x1-1,x2-1,x3-1,x4-1]
-    else:
-        dic[(people,i)] = [x1-1,x2-1,x3-1,x4-1]
-    
-    
-    if cnt == 4:
-        cnt = 0
-        people += 1
-
-def remove_time(tmp_k_graph):
-    for i in range(n):
-        for j in range(n):
-            if tmp_k_graph[i][j][1] > 0:
-                tmp_k_graph[i][j][1] -= 1
-                if tmp_k_graph[i][j][1] == 0:
-                    tmp_k_graph[i][j][0] = 0
-
-    return tmp_k_graph
-
-def fight(tmp):
-    tmp1 = [[0] * n for _ in range(n)]
-
-    for i in range(n):
-        for j in range(n):
-            if len(tmp[i][j]) >= 2:
-                min_val = min(tmp[i][j])
-                for k in tmp[i][j]:
-                    if k != min_val:
-                        life[k] = False
-                tmp1[i][j] = min_val
-            if len(tmp[i][j]) == 1:
-                tmp1[i][j] = tmp[i][j][0]
-    
-    return tmp1
-
-
-def move(graph,k_graph):
-    tmp = [[[] for _ in range(n)] for _ in range(n)]
-    tmp_k_graph = copy.deepcopy(k_graph)
-
-    tmp_k_graph = remove_time(tmp_k_graph)
- 
-    for i in range(n):
-        for j in range(n):
-            check = []
-            if graph[i][j] > 0:
-                for k in range(4):
-                    nx, ny = i + dx[dic[graph[i][j],all_l[graph[i][j]]][k]], j + dy[dic[graph[i][j],all_l[graph[i][j]]][k]]
-
-                    if 0 <= nx < n and 0 <= ny < n and k_graph[nx][ny][1] == 0:
-                        check.append([nx,ny,dic[graph[i][j],all_l[graph[i][j]]][k]])
-                        break
-
-                if len(check):
-                    tmp_k_graph[check[0][0]][check[0][1]][0] = graph[i][j]
-                    tmp_k_graph[check[0][0]][check[0][1]][1] = K
-                    all_l[graph[i][j]] = check[0][2]
-                    tmp[check[0][0]][check[0][1]].append(graph[i][j])
-                
-                else:
-                    for k in range(4):
-                        nx, ny = i + dx[dic[graph[i][j],all_l[graph[i][j]]][k]], j + dy[dic[graph[i][j],all_l[graph[i][j]]][k]]
-
-                        if 0 <= nx < n and 0 <= ny < n and k_graph[nx][ny][0] == graph[i][j]:
-                            tmp[nx][ny].append(graph[i][j])
-                            all_l[graph[i][j]] = dic[graph[i][j],all_l[graph[i][j]]][k]
+def move():
+    tmp_board = [[0] * N for _ in range(N)]
+    for x in range(N):
+        for y in range(N):
+            if board[x][y] != 0:
+                direction = directions[board[x][y]-1]
+                found = False
+                for idx in prior[board[x][y]-1][direction-1]:
+                    nx = x + dx[idx-1]
+                    ny = y + dy[idx-1]
+                    if 0 <= nx < N and 0 <= ny < N:
+                        if smell[nx][ny][1] == 0:
+                            directions[board[x][y] - 1] = idx
+                            if tmp_board[nx][ny] == 0:
+                                tmp_board[nx][ny] = board[x][y]
+                            else:
+                                tmp_board[nx][ny] = min(tmp_board[nx][ny], board[x][y])
+                            found =True
                             break
-    
-    tmp = fight(tmp)
-    return tmp, tmp_k_graph
+                if found:
+                    continue
 
-def total():
-    global graph, k_graph
-    for time in range(1,1001):
-        graph, k_graph = move(graph,k_graph)
+                for idx in prior[board[x][y]-1][direction-1]:
+                    nx = x + dx[idx-1]
+                    ny = y + dy[idx-1]
+                    if 0 <= nx < N and 0 <= ny < N:
+                        if smell[nx][ny][0] == board[x][y]:
+                            directions[board[x][y]-1] = idx
+                            tmp_board[nx][ny] = board[x][y]
+                            break
+    return tmp_board
 
-        if life[1] == True and any(life[2:]) == False:
-            return time
-            
-    return -1
+answer = 0
 
-print(total())
+while True:
+    update_smell()
+    board = move()
+    answer += 1
+    check =True
+    for i in range(N):
+        for j in range(N):
+            if board[i][j] > 1:
+                check =False
+
+    if check:
+        print(answer)
+        break
+
+    if answer >= 1000:
+        print(-1)
+        break
