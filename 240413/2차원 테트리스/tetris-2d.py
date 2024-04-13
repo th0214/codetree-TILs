@@ -69,7 +69,7 @@ def check_red():
             if red[i][j] == 1:
                 tmp.append([i,j])
     
-    if len(tmp):
+    if len(tmp) == 2:
         if abs(tmp[0][0] - tmp[1][0]) == 1:
             red[0][-1] = red[1][-1] = red[2][-1] = red[3][-1] = 0
             delete = True
@@ -78,6 +78,10 @@ def check_red():
             red[0][-1] = red[1][-1] = red[2][-1] = red[3][-1] = 0
             red[0][-2] = red[1][-2] = red[2][-2] = red[3][-2] = 0
             delete2 = True
+
+    if len(tmp) == 1:
+        red[0][-1] = red[1][-1] = red[2][-1] = red[3][-1] = 0
+        delete = True
 
     return delete, delete2
 
@@ -154,7 +158,7 @@ def check_yellow():
             if yellow[i][j] == 1:
                 tmp.append([i,j])
 
-    if len(tmp):
+    if len(tmp) == 2:
         if abs(tmp[0][0] - tmp[1][0]) == 1:
             yellow[-1][0] = yellow[-1][1] = yellow[-1][2] = yellow[-1][3] = 0
             yellow[-2][0] = yellow[-2][1] = yellow[-2][2] = yellow[-2][3] = 0
@@ -163,6 +167,10 @@ def check_yellow():
         if abs(tmp[0][1] - tmp[1][1]) == 1:
             yellow[-1][0] = yellow[-1][1] = yellow[-1][2] = yellow[-1][3] = 0
             delete = True
+
+    if len(tmp) == 1:
+        yellow[-1][0] = yellow[-1][1] = yellow[-1][2] = yellow[-1][3] = 0
+        delete = True
 
     return delete, delete2
 
@@ -205,3 +213,5 @@ for i in yellow:
 
 print(b_block)
 print(total)
+# print(red)
+# print(yellow)
