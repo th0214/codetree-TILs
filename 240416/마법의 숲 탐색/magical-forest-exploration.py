@@ -22,15 +22,22 @@ def setting(c, d):
 
 def check_left(i,c,d):
     x, y = i, c
-
-    for k in range(C-c,0,-1):
+    # print(x,y)
+    for k in range(C-c+1,0,-1):
         y = y-k
         if 0 <= y-1:
             if graph[x][y-1] == graph[x-1][y] == graph[x][y+1] == graph[x+1][y] == 0:
                 x = x + k
                 if x + 1 < R + 3:
                     if graph[x][y - 1] == graph[x - 1][y] == graph[x][y + 1] == graph[x + 1][y] == 0:
-                        return True, [x,y,(d-k)%4]
+                        for l in range(R-x+1,-1,-1):
+                            x = x+l
+                            # print(x)
+                            if graph[x][y - 1] == graph[x - 1][y] == graph[x][y + 1] == graph[x + 1][y] == 0:
+                                return True, [x,y,(d-k)%4]
+                            else:
+                                x = x-l
+                                continue
                     else:
                         x, y = i, c
                         continue
@@ -48,7 +55,7 @@ def check_left(i,c,d):
 
 def check_right(i,c,d):
     x,y = i,c
-    for k in range(C-c-1,0,-1):
+    for k in range(C-c+1,0,-1):
         y = y + k
 
         if y+1 < C:
@@ -56,7 +63,13 @@ def check_right(i,c,d):
                 x = x + k
                 if x+1 < R+3:
                     if graph[x][y - 1] == graph[x - 1][y] == graph[x][y + 1] == graph[x + 1][y] == 0:
-                        return True, [x,y,(d+k)%4]
+                        for l in range(R - x + 1, -1, -1):
+                            x = x + l
+                            if graph[x][y - 1] == graph[x - 1][y] == graph[x][y + 1] == graph[x + 1][y] == 0:
+                                return True, [x, y, (d +k) % 4]
+                            else:
+                                x = x - l
+                                continue
                     else:
                         x, y = i, c
                         continue
